@@ -65,14 +65,8 @@ int hpx_main(hpx::program_options::variables_map & opts) {
 
   auto inputFile = opts["mdfile"].as<std::string>();
 
-  auto gFile = readMDfile(inputFile, &op, &info);
-
-  // Order the graph (keep a hold of the map)
-  std::map<int, int> invMap;
-  auto graph = orderGraphFromFile<NWORDS>(gFile, invMap);
-
-  auto spawnDepth = opts["spawn-depth"].as<std::uint64_t>();
-  auto decisionBound = opts["decisionBound"].as<int>();
+  auto errmsg = readMDfile(inputFile, &op, &info);
+  auto instance = info::filename;
 
   auto start_time = std::chrono::steady_clock::now();
 
