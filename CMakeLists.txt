@@ -14,6 +14,7 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(YEWPAR_LIBRARY_ONLY "OFF" CACHE BOOL "Build YewPar without any applications")
 set(YEWPAR_BUILD_DNC_APPS "OFF" CACHE BOOL "Build Divide and Conquer apps for YewPar")
 set(YEWPAR_BUILD_BNB_APPS "ON" CACHE BOOL "Build Branch and Bound apps for YewPar")
+set(YEWPAR_BUILD_BP_APPS "ON" CACHE BOOL "Build Branch and Prune apps for YewPar")
 set(YEWPAR_BUILD_ENUMERATION_APPS "ON" CACHE BOOL "Build Enumeration apps for YewPar")
 set(YEWPAR_BUILD_TEST_APPS "ON" CACHE BOOL "Create tests for YewPar apps")
 
