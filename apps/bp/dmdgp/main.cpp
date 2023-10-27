@@ -44,7 +44,8 @@
 #include "util/func.hpp"
 #include "util/NodeGenerator.hpp"
 
-int hpx_main(hpx::program_options::variables_map & opts) {
+int hpx_main(hpx::program_options::variables_map &opts)
+{
   /*
   if (!opts.count("input-file")) {
     std::cerr << "You must provide an DIMACS input file with \n";
@@ -52,25 +53,51 @@ int hpx_main(hpx::program_options::variables_map & opts) {
     return EXIT_FAILURE;
   }
   */
+  FILE *input;
   OPTION::op;
   INFORMATION::info;
 
   // Check if the help option was provided
-  if (vm.count("help")) {
-    std::cout << desc_commandline << std::endl << "Note: When using -1, options -p and -P have the same effect" << std::endl;
-    return hpx::finalize();
+  if (vm.count("help"))
+  {
+    hpx::cout << desc_commandline << std::endl
+              << "Note: When using -1, options -p and -P have the same effect" << std::endl;
+    hpx::finalize();
+    return EXIT_FAILURE;
   }
 
-  //hpx::program_options::notify(opts);
+  // hpx::program_options::notify(opts);
 
   auto inputFile = opts["mdfile"].as<std::string>();
 
+  input = fopen(inputFile, "r");
+  if (input == NULL)
+  {
+    hpx::cout << "error while opening MDfile " << inputFile << std::endl;
+    hpx::finalize();
+    return EXIT_FAILURE;
+  };
+
   auto errmsg = readMDfile(inputFile, &op, &info);
+
+  // verifying the index range for the vertices in the distance list
+  // -> the input needs to be a valid file pointer, sep is the separator
+  // -> format is the expected input line format in binary
+  // -> memory is a char array of length msize, pre-allocated and able to contain an entire line of the input file
+  // -> n0 is the smallest identifier found in the file (output, pointer)
+  // -> the returning value is the number of identified vertices (it is 0 if an error occurs)
+  auto n = numberOfVerticesInFile(input, info.sep, info.format, &n0, linelen, line);
+  if (n == 0)
+  {
+    hpx::cout << "Error: it looks like the instance file does not respect the specified format" << std::endl;
+    free(line);
+    return 1;
+  };
   auto instance = info::filename;
 
   auto start_time = std::chrono::steady_clock::now();
 
-  // Initialise Root Node
+  // Initialise Root
   MCSol mcsol;
   mcsol.members.reserve(graph.size());
   mcsol.colours = 0;
@@ -78,122 +105,12 @@ int hpx_main(hpx::program_options::variables_map & opts) {
   BitSet<NWORDS> cands;
   cands.resize(graph.size());
   cands.set_all();
-  MCNode root = { mcsol, 0, cands };
+  MCNode root = {mcsol, 0, cands};
 
   auto sol = root;
   auto skeletonType = opts["skeleton"].as<std::string>();
-  if (skeletonType == "seq") {
-    if (decisionBound != 0) {
-      YewPar::Skeletons::API::Params<int> searchParameters;
-      searchParameters.expectedObjective = decisionBound;
 
-      sol = YewPar::Skeletons::Seq<GenNode,
-                                   YewPar::Skeletons::API::Decision,
-                                   YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                   YewPar::Skeletons::API::PruneLevel>
-            ::search(graph, root, searchParameters);
-    } else {
-    sol = YewPar::Skeletons::Seq<GenNode,
-                                 YewPar::Skeletons::API::Optimisation,
-                                 YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                 YewPar::Skeletons::API::PruneLevel>
-          ::search(graph, root);
-    }
-  } else if (skeletonType == "depthbounded") {
-    if (decisionBound != 0) {
-      YewPar::Skeletons::API::Params<int> searchParameters;
-      searchParameters.expectedObjective = decisionBound;
-      searchParameters.spawnDepth = spawnDepth;
-      sol = YewPar::Skeletons::DepthBounded<GenNode,
-                                           YewPar::Skeletons::API::Decision,
-                                           YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                           YewPar::Skeletons::API::PruneLevel>
-            ::search(graph, root, searchParameters);
-    } else {
-      YewPar::Skeletons::API::Params<int> searchParameters;
-      searchParameters.spawnDepth = spawnDepth;
-      auto poolType = opts["poolType"].as<std::string>();
-      if (poolType == "deque") {
-        sol = YewPar::Skeletons::DepthBounded<GenNode,
-                                             YewPar::Skeletons::API::Optimisation,
-                                             YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                             YewPar::Skeletons::API::PruneLevel,
-                                             YewPar::Skeletons::API::DepthBoundedPoolPolicy<
-                                               Workstealing::Policies::Workpool> >
-            ::search(graph, root, searchParameters);
-      } else {
-        sol = YewPar::Skeletons::DepthBounded<GenNode,
-                                             YewPar::Skeletons::API::Optimisation,
-                                             YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                             YewPar::Skeletons::API::PruneLevel,
-                                             YewPar::Skeletons::API::DepthBoundedPoolPolicy<
-                                               Workstealing::Policies::DepthPoolPolicy> >
-            ::search(graph, root, searchParameters);
-      }
-    }
-  } else if (skeletonType == "stacksteal") {
-    if (decisionBound != 0) {
-      YewPar::Skeletons::API::Params<int> searchParameters;
-      searchParameters.expectedObjective = decisionBound;
-      searchParameters.stealAll = static_cast<bool>(opts.count("chunked"));
-      sol = YewPar::Skeletons::StackStealing<GenNode,
-                                             YewPar::Skeletons::API::Decision,
-                                             YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                             YewPar::Skeletons::API::PruneLevel>
-          ::search(graph, root, searchParameters);
-    } else {
-      YewPar::Skeletons::API::Params<int> searchParameters;
-      searchParameters.stealAll = static_cast<bool>(opts.count("chunked"));
-      sol = YewPar::Skeletons::StackStealing<GenNode,
-                                             YewPar::Skeletons::API::Optimisation,
-                                             YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                             YewPar::Skeletons::API::PruneLevel>
-          ::search(graph, root, searchParameters);
-    }
-  } else if (skeletonType == "ordered") {
-    YewPar::Skeletons::API::Params<int> searchParameters;
-    searchParameters.spawnDepth = spawnDepth;
-    if (opts.count("discrepancyOrder")) {
-      sol = YewPar::Skeletons::Ordered<GenNode,
-                                       YewPar::Skeletons::API::Optimisation,
-                                       YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                       YewPar::Skeletons::API::DiscrepancySearch,
-                                       YewPar::Skeletons::API::PruneLevel>
-          ::search(graph, root, searchParameters);
-    } else {
-    sol = YewPar::Skeletons::Ordered<GenNode,
-                                         YewPar::Skeletons::API::Optimisation,
-                                         YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                         YewPar::Skeletons::API::PruneLevel>
-          ::search(graph, root, searchParameters);
-    }
-  } else if (skeletonType == "budget") {
-    if (decisionBound != 0) {
-    YewPar::Skeletons::API::Params<int> searchParameters;
-    searchParameters.backtrackBudget = opts["backtrack-budget"].as<unsigned>();
-    searchParameters.expectedObjective = decisionBound;
-    sol = YewPar::Skeletons::Budget<GenNode,
-                                    YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                    YewPar::Skeletons::API::Decision,
-                                    YewPar::Skeletons::API::PruneLevel>
-        ::search(graph, root, searchParameters);
-    } else {
-      YewPar::Skeletons::API::Params<int> searchParameters;
-      searchParameters.backtrackBudget = opts["backtrack-budget"].as<unsigned>();
-      sol = YewPar::Skeletons::Budget<GenNode,
-                                      YewPar::Skeletons::API::Optimisation,
-                                      YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                      YewPar::Skeletons::API::PruneLevel>
-          ::search(graph, root, searchParameters);
-    }
-  } else {
-    hpx::cout << "Invalid skeleton type option. Should be: seq, depthbound, stacksteal or ordered" << std::endl;
-    hpx::finalize();
-    return EXIT_FAILURE;
-  }
-
-  auto overall_time = std::chrono::duration_cast<std::chrono::milliseconds>
-    (std::chrono::steady_clock::now() - start_time);
+  auto overall_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
 
   hpx::cout << "MaxClique Size = " << sol.size << std::endl;
   hpx::cout << "cpu = " << overall_time.count() << std::endl;
@@ -201,7 +118,8 @@ int hpx_main(hpx::program_options::variables_map & opts) {
   return hpx::finalize();
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
   hpx::program_options::options_description
       desc_commandline("Usage: " HPX_APPLICATION_STRING " [options]");
 
