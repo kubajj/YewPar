@@ -61,13 +61,13 @@ int hpx_main(hpx::program_options::variables_map &opts)
   int n0;
 
   // Check if the help option was provided
-  if (vm.count("help"))
-  {
-    hpx::cout << desc_commandline << std::endl
-              << "Note: When using -1, options -p and -P have the same effect" << std::endl;
-    hpx::finalize();
-    return EXIT_FAILURE;
-  }
+  // if (vm.count("help"))
+  // {
+  //   hpx::cout << desc_commandline << std::endl
+  //             << "Note: When using -1, options -p and -P have the same effect" << std::endl;
+  //   hpx::finalize();
+  //   return EXIT_FAILURE;
+  // }
 
   // hpx::program_options::notify(opts);
 
@@ -81,7 +81,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
     return EXIT_FAILURE;
   };
 
-  auto errmsg = readMDfile(inputFile, &op, &info);
+  auto errmsg = readMDfile(input, &op, &info);
 
   // verifying the length of words and lines in the text file (for proper memory allocations)
   nlines = textFileAnalysis(input, info.sep, &wordlen, &linelen);
