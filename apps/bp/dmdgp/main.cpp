@@ -55,7 +55,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
     return EXIT_FAILURE;
   }
   */
-  bp::FILE *input;
+  FILE *input;
   bp::OPTION op;
   bp::INFORMATION info;
   size_t nlines, linelen, wordlen;
