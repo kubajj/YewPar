@@ -72,8 +72,9 @@ int hpx_main(hpx::program_options::variables_map &opts)
   // hpx::program_options::notify(opts);
 
   auto inputFile = opts["mdfile"].as<std::string>();
+  const char *inputFileCStr = inputFile.c_str();
 
-  input = fopen(inputFile, "r");
+  input = fopen(inputFileCStr, "r");
   if (input == NULL)
   {
     hpx::cout << "error while opening MDfile " << inputFile << std::endl;
