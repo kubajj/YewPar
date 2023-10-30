@@ -54,8 +54,8 @@ int hpx_main(hpx::program_options::variables_map &opts)
   }
   */
   FILE *input;
-  OPTION::op;
-  INFORMATION::info;
+  OPTION op;
+  INFORMATION info;
   size_t nlines, linelen, wordlen;
   char *line;
   int n0;
@@ -104,7 +104,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
     free(line);
     return 1;
   };
-  auto instance = info::filename;
+  auto instance = info.filename;
 
   auto start_time = std::chrono::steady_clock::now();
 
@@ -112,7 +112,6 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   auto overall_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
 
-  hpx::cout << "MaxClique Size = " << sol.size << std::endl;
   hpx::cout << "cpu = " << overall_time.count() << std::endl;
 
   return hpx::finalize();
