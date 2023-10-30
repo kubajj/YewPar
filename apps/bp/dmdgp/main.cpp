@@ -97,16 +97,6 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   auto start_time = std::chrono::steady_clock::now();
 
-  // Initialise Root
-  MCSol mcsol;
-  mcsol.members.reserve(graph.size());
-  mcsol.colours = 0;
-
-  BitSet<NWORDS> cands;
-  cands.resize(graph.size());
-  cands.set_all();
-  MCNode root = {mcsol, 0, cands};
-
   auto sol = root;
   auto skeletonType = opts["skeleton"].as<std::string>();
 
@@ -123,6 +113,7 @@ int main(int argc, char *argv[])
   hpx::program_options::options_description
       desc_commandline("Usage: " HPX_APPLICATION_STRING " [options]");
 
+  // clang-format off
   desc_commandline.add_options()
       ("help,h", "Print this help message")
       ( "skeleton-type",
@@ -149,8 +140,8 @@ int main(int argc, char *argv[])
       )
       ( "consec", "Verifies whether the consecutivity assumption is satisfied")
       ( "nomonitor", "Does not show the current layer number during the execution to improve performance")
-      ("sym", hpx::program_options::value<unsigned>()->default_value(2), "Only one symmetric half of the tree is explored (argument may be 1 or 2)")
-        );
+      ("sym", hpx::program_options::value<unsigned>()->default_value(2), "Only one symmetric half of the tree is explored (argument may be 1 or 2)");
+  // clang-format on
 
   hpx::register_startup_function(&Workstealing::Policies::SearchManagerPerf::registerPerformanceCounters);
 
