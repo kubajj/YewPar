@@ -56,6 +56,9 @@ int hpx_main(hpx::program_options::variables_map &opts)
   FILE *input;
   OPTION::op;
   INFORMATION::info;
+  size_t nlines, linelen, wordlen;
+  char *line;
+  int n0;
 
   // Check if the help option was provided
   if (vm.count("help"))
@@ -80,6 +83,14 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   auto errmsg = readMDfile(inputFile, &op, &info);
 
+  // verifying the length of words and lines in the text file (for proper memory allocations)
+  nlines = textFileAnalysis(input, info.sep, &wordlen, &linelen);
+  if (nlines == 0 || wordlen == 0 || linelen == 0)
+  {
+    hpx::cout << "Error: while reading instance file: the file seems to be empty" << std::endl;
+    return 1;
+  };
+
   // verifying the index range for the vertices in the distance list
   // -> the input needs to be a valid file pointer, sep is the separator
   // -> format is the expected input line format in binary
@@ -97,7 +108,6 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   auto start_time = std::chrono::steady_clock::now();
 
-  auto sol = root;
   auto skeletonType = opts["skeleton"].as<std::string>();
 
   auto overall_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
