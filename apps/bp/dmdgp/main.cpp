@@ -86,6 +86,13 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   auto errmsg = readMDfile(input, &op, &info);
 
+  input = fopen(info.filename, "r");
+  if (input == NULL)
+  {
+    hpx::cout << "error while opening MDfile " << inputFile << std::endl;
+    hpx::finalize();
+    return EXIT_FAILURE;
+  };
   // verifying the length of words and lines in the text file (for proper memory allocations)
   nlines = textFileAnalysis(input, info.sep, &wordlen, &linelen);
   if (nlines == 0 || wordlen == 0 || linelen == 0)
@@ -93,6 +100,9 @@ int hpx_main(hpx::program_options::variables_map &opts)
     hpx::cout << "Error: while reading instance file: the file seems to be empty" << std::endl;
     return 1;
   };
+
+  // memory allocation for the array of chars containing the text file lines
+  line = (char *)calloc(linelen + 1, sizeof(char));
 
   // verifying the index range for the vertices in the distance list
   // -> the input needs to be a valid file pointer, sep is the separator
