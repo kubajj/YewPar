@@ -13,32 +13,38 @@
                                     BoxDDF uses the function box_distance (distance.c)
 ******************************************************************************************************/
 
-#include "bp.h"
+#include "bp.hpp"
 
 // Direct Distance Feasibility pruning device
 // -> id is the vertex id for which it is necessary to verify the reference distances
 // -> v is the set of VERTEX structures (with size > id), and X is the current conformation
 // -> DDF outputs the partial error on the entire set of reference distances related to the vertex id
 //   (the partial error is computed as the sum of the MDE terms related to this id)
-double DDF(int id,VERTEX *v,double **X)
+double DDF(int id, VERTEX *v, double **X)
 {
    int n;
-   double error,dist,diff;
+   double error, dist, diff;
    REFERENCE *ref = v[id].ref;
 
    // collecting distances and verifying error
-   n = 0;  error = 0.0;
+   n = 0;
+   error = 0.0;
    while (ref != NULL)
    {
       n++;
-      dist = distance(otherVertexId(ref),id,X);
-      diff = lowerBound(ref) - dist;  if (diff > 0.0)  error = error + diff;  // only one of the two
-      diff = dist - upperBound(ref);  if (diff > 0.0)  error = error + diff;  // per time can be true
+      dist = distance(otherVertexId(ref), id, X);
+      diff = lowerBound(ref) - dist;
+      if (diff > 0.0)
+         error = error + diff; // only one of the two
+      diff = dist - upperBound(ref);
+      if (diff > 0.0)
+         error = error + diff; // per time can be true
       ref = ref->next;
    };
 
    // normalizing over the number of reference distances
-   if (n != 0)  error = error/n;
+   if (n != 0)
+      error = error / n;
 
    return error;
 };
@@ -48,28 +54,33 @@ double DDF(int id,VERTEX *v,double **X)
 // -> v is the set of VERTEX structures (with size > id), and [lX,uX] is the set of boxes up to vertex id
 // -> DDF outputs the partial error on the entire set of reference distances related to the vertex id
 //   (the function box_distance is used to compute distances between pairs of boxes)
-double BoxDDF(int id,VERTEX *v,double **lX,double **uX)
+double BoxDDF(int id, VERTEX *v, double **lX, double **uX)
 {
    int n;
    int otherId;
-   double error,diff;
-   double min,max;
+   double error, diff;
+   double min, max;
    REFERENCE *ref = v[id].ref;
 
    // collecting distances and verifying error
-   n = 0;  error = 0.0;
+   n = 0;
+   error = 0.0;
    while (ref != NULL)
    {
       otherId = otherVertexId(ref);
-      min = box_distance(id,otherId,lX,uX,&max);
-      diff = lowerBound(ref) - max;  if (diff > 0.0)  error = error + diff;  // only one of the two
-      diff = min - upperBound(ref);  if (diff > 0.0)  error = error + diff;  // per time can be true
+      min = box_distance(id, otherId, lX, uX, &max);
+      diff = lowerBound(ref) - max;
+      if (diff > 0.0)
+         error = error + diff; // only one of the two
+      diff = min - upperBound(ref);
+      if (diff > 0.0)
+         error = error + diff; // per time can be true
       ref = ref->next;
    };
 
    // normalizing over the number of reference distances
-   if (n != 0)  error = error/n;
+   if (n != 0)
+      error = error / n;
 
    return error;
 };
-
