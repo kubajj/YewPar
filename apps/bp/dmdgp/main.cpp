@@ -56,8 +56,8 @@ int hpx_main(hpx::program_options::variables_map &opts)
   }
   */
   FILE *input;
-  bp::OPTION op;
-  bp::INFORMATION info;
+  OPTION op;
+  INFORMATION info;
   size_t nlines, linelen, wordlen;
   char *line;
   int n0;
@@ -84,10 +84,10 @@ int hpx_main(hpx::program_options::variables_map &opts)
     return EXIT_FAILURE;
   };
 
-  auto errmsg = bp::readMDfile(input, &op, &info);
+  auto errmsg = readMDfile(input, &op, &info);
 
   // verifying the length of words and lines in the text file (for proper memory allocations)
-  nlines = bp::textFileAnalysis(input, info.sep, &wordlen, &linelen);
+  nlines = textFileAnalysis(input, info.sep, &wordlen, &linelen);
   if (nlines == 0 || wordlen == 0 || linelen == 0)
   {
     hpx::cout << "Error: while reading instance file: the file seems to be empty" << std::endl;
@@ -100,7 +100,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
   // -> memory is a char array of length msize, pre-allocated and able to contain an entire line of the input file
   // -> n0 is the smallest identifier found in the file (output, pointer)
   // -> the returning value is the number of identified vertices (it is 0 if an error occurs)
-  auto n = bp::numberOfVerticesInFile(input, info.sep, info.format, &n0, linelen, line);
+  auto n = numberOfVerticesInFile(input, info.sep, info.format, &n0, linelen, line);
   if (n == 0)
   {
     hpx::cout << "Error: it looks like the instance file does not respect the specified format" << std::endl;
