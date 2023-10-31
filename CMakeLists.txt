@@ -16,6 +16,7 @@ set(YEWPAR_BUILD_DNC_APPS "OFF" CACHE BOOL "Build Divide and Conquer apps for Ye
 set(YEWPAR_BUILD_BNB_APPS "OFF" CACHE BOOL "Build Branch and Bound apps for YewPar")
 set(YEWPAR_BUILD_BP_APPS "ON" CACHE BOOL "Build Branch and Prune apps for YewPar")
 set(YEWPAR_BUILD_ENUMERATION_APPS "OFF" CACHE BOOL "Build Enumeration apps for YewPar")
+set(YEWPAR_BUILD_DECISION_APPS "OFF" CACHE BOOL "Build Decision apps for YewPar")
 set(YEWPAR_BUILD_TEST_APPS "OFF" CACHE BOOL "Create tests for YewPar apps")
 
 set(YEWPAR_TEST_DATA_DIR "${PROJECT_SOURCE_DIR}/test/" CACHE FILEPATH "Test data directory for YewPar apps")
