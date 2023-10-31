@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _BP_
 #define _BP_
 #include <iostream>

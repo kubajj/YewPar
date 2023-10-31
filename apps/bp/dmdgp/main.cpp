@@ -1,21 +1,3 @@
-/****************************************************************************************************
-  Name:       MD-jeep
-              the Branch & Prune algorithm for discretizable Distance Geometry - main program
-  Author:     A. Mucherino, D.S. Goncalves, C. Lavor, L. Liberti, J-H. Lin, N. Maculan
-  Sources:    ansi C
-  License:    GNU General Public License v.3
-  History:    May 01 2010  v.0.1    first release
-              May 10 2014  v.0.2    method based on change of basis added for coordinate computation
-                                    more robust check on input instances added
-              Jul 28 2019  v.0.3.0  main adapted for BP with interval distances
-                                    more efficient organization of the data structures
-              Mar 21 2020  v.0.3.1  using new functions of "vertex" to verify the instance properties
-                                    precomputing all triplets of reference vertices
-              May 19 2020  v.0.3.2  introduction of MDfiles, possibility to select the method to run
-              Apr 13 2022  v.0.3.2  patch
-
-  Code adapted to work with YewPar by Jakub Jelinek and Blair Archibald
-*****************************************************************************************************/
 #include "bp.hpp"
 
 int hpx_main(hpx::program_options::variables_map &opts)
