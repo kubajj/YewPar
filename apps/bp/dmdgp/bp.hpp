@@ -25,6 +25,7 @@
 #include "util/NodeGenerator.hpp"
 
 #include <string>
+#include <fstream>
 
 struct MethodParameters
 {

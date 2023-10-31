@@ -48,6 +48,10 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   auto skeletonType = opts["skeleton"].as<std::string>();
 
+  /*
+    Main body
+  */
+
   auto overall_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
 
   hpx::cout << "cpu = " << overall_time.count() << std::endl;
