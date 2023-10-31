@@ -16,33 +16,7 @@
 
   Code adapted to work with YewPar by Jakub Jelinek and Blair Archibald
 *****************************************************************************************************/
-
-#include <iostream>
-#include <numeric>
-#include <algorithm>
-#include <vector>
-#include <map>
-#include <chrono>
-#include <memory>
-#include <typeinfo>
-
-#include <hpx/hpx_init.hpp>
-#include <hpx/iostream.hpp>
-
-#include <boost/serialization/access.hpp>
-
-#include "YewPar.hpp"
-
-#include "skeletons/Seq.hpp"
-#include "skeletons/DepthBounded.hpp"
-#include "skeletons/StackStealing.hpp"
-#include "skeletons/Ordered.hpp"
-#include "skeletons/Budget.hpp"
-
 #include "bp.hpp"
-
-#include "util/func.hpp"
-#include "util/NodeGenerator.hpp"
 
 double INFTY = 1.e+30;
 
@@ -74,50 +48,9 @@ int hpx_main(hpx::program_options::variables_map &opts)
   // hpx::program_options::notify(opts);
 
   auto inputFile = opts["mdfile"].as<std::string>();
-  const char *inputFileCStr = inputFile.c_str();
 
-  input = fopen(inputFileCStr, "r");
-  if (input == NULL)
-  {
-    hpx::cout << "error while opening MDfile " << inputFile << std::endl;
-    hpx::finalize();
-    return EXIT_FAILURE;
-  };
-
-  auto errmsg = readMDfile(input, &op, &info);
-
-  input = fopen(info.filename, "r");
-  if (input == NULL)
-  {
-    hpx::cout << "error while opening MDfile " << inputFile << std::endl;
-    hpx::finalize();
-    return EXIT_FAILURE;
-  };
-  // verifying the length of words and lines in the text file (for proper memory allocations)
-  nlines = textFileAnalysis(input, info.sep, &wordlen, &linelen);
-  if (nlines == 0 || wordlen == 0 || linelen == 0)
-  {
-    hpx::cout << "Error: while reading instance file: the file seems to be empty" << std::endl;
-    return 1;
-  };
-
-  // memory allocation for the array of chars containing the text file lines
-  line = (char *)calloc(linelen + 1, sizeof(char));
-
-  // verifying the index range for the vertices in the distance list
-  // -> the input needs to be a valid file pointer, sep is the separator
-  // -> format is the expected input line format in binary
-  // -> memory is a char array of length msize, pre-allocated and able to contain an entire line of the input file
-  // -> n0 is the smallest identifier found in the file (output, pointer)
-  // -> the returning value is the number of identified vertices (it is 0 if an error occurs)
-  auto n = numberOfVerticesInFile(input, info.sep, info.format, &n0, linelen, line);
-  if (n == 0)
-  {
-    hpx::cout << "Error: it looks like the instance file does not respect the specified format" << std::endl;
-    free(line);
-    return 1;
-  };
-  auto instance = info.filename;
+  ParsedData data = parseFile(inputFile);
+  std::vector<DataRecord> instance = readDataFile(data.file);
 
   auto start_time = std::chrono::steady_clock::now();
 
