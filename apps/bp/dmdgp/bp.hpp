@@ -1,4 +1,5 @@
-
+#ifndef _BP_
+#define _BP_
 #include <iostream>
 #include <numeric>
 #include <algorithm>
@@ -26,6 +27,7 @@
 
 #include <string>
 #include <fstream>
+#endif
 
 struct MethodParameters
 {
