@@ -41,6 +41,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   ParsedData data = parseFile(inputFile);
   std::vector<DataRecord> instance = readDataFile(data.file);
+  std::map<std::pair<int, int>, DataRecord *> recordMap = createDataRecordMap(instance);
 
   auto start_time = std::chrono::steady_clock::now();
 
