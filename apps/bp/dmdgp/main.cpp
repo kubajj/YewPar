@@ -51,6 +51,12 @@ int hpx_main(hpx::program_options::variables_map &opts)
   /*
     Main body
   */
+  if (skeletonType != "seq")
+  {
+    hpx::cout << "Invalid skeleton type option. Only seq implemented so far." << std::endl;
+    hpx::finalize();
+    return EXIT_FAILURE;
+  }
 
   auto overall_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
 
@@ -94,7 +100,7 @@ int main(int argc, char *argv[])
       ("sym", hpx::program_options::value<unsigned>()->default_value(2), "Only one symmetric half of the tree is explored (argument may be 1 or 2)");
   // clang-format on
 
-  hpx::register_startup_function(&Workstealing::Policies::SearchManagerPerf::registerPerformanceCounters);
+  YewPar::registerPerformanceCounters();
 
   hpx::init_params args;
   args.desc_cmdline = desc_commandline;
