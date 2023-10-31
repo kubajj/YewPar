@@ -1,3 +1,19 @@
+#include <hpx/hpx_init.hpp>
+#include <hpx/iostream.hpp>
+
+#include <boost/serialization/access.hpp>
+
+#include "YewPar.hpp"
+
+#include "skeletons/Seq.hpp"
+#include "skeletons/DepthBounded.hpp"
+#include "skeletons/StackStealing.hpp"
+#include "skeletons/Ordered.hpp"
+#include "skeletons/Budget.hpp"
+
+#include "util/func.hpp"
+#include "util/NodeGenerator.hpp"
+
 #include "bp.hpp"
 
 int hpx_main(hpx::program_options::variables_map &opts)

@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _BP_
 #define _BP_
 #include <iostream>
@@ -9,23 +8,6 @@
 #include <chrono>
 #include <memory>
 #include <typeinfo>
-
-#include <hpx/hpx_init.hpp>
-#include <hpx/iostream.hpp>
-
-#include <boost/serialization/access.hpp>
-
-#include "YewPar.hpp"
-
-#include "skeletons/Seq.hpp"
-#include "skeletons/DepthBounded.hpp"
-#include "skeletons/StackStealing.hpp"
-#include "skeletons/Ordered.hpp"
-#include "skeletons/Budget.hpp"
-
-#include "util/func.hpp"
-#include "util/NodeGenerator.hpp"
-
 #include <string>
 #include <fstream>
 #endif
