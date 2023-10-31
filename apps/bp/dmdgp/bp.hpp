@@ -10,6 +10,7 @@
 #include <typeinfo>
 #include <string>
 #include <fstream>
+#include <sstream>
 #endif
 
 struct MethodParameters
