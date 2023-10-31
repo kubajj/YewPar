@@ -18,8 +18,6 @@
 *****************************************************************************************************/
 #include "bp.hpp"
 
-double INFTY = 1.e+30;
-
 int hpx_main(hpx::program_options::variables_map &opts)
 {
   /*
@@ -29,12 +27,6 @@ int hpx_main(hpx::program_options::variables_map &opts)
     return EXIT_FAILURE;
   }
   */
-  FILE *input;
-  OPTION op;
-  INFORMATION info;
-  size_t nlines, linelen, wordlen;
-  char *line;
-  int n0;
 
   // Check if the help option was provided
   // if (vm.count("help"))
