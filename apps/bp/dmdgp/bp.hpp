@@ -47,7 +47,7 @@ struct DataRecord
 // readfile.cpp
 ParsedData parseFile(const std::string &filename);
 std::vector<DataRecord> readDataFile(const std::string &filename, int &maxId);
-std::map<std::pair<int, int>, DataRecord *> createDataRecordMap(const std::vector<DataRecord> &records);
+std::map<std::pair<int, int>, DataRecord *> createDataRecordMap(std::vector<DataRecord> &records);
 
 // vertex.cpp
 void calculateAnglesForVertices(
