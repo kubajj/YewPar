@@ -47,12 +47,12 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   // Create empty maps for theta and omega
   std::map<std::pair<int, int>, double> thetaMap;
-  std::map<std::pair(int, int), double> omegaMap;
+  std::map<std::pair<int, int>, double> omegaMap;
 
   // Calculate the angles θ among consecutive triplets of vertices
   calculateAnglesForVertices(references, n_vertices, thetaMap, omegaMap);
 
-  std::out << "n: " << n << " len(thetaMap): " << thetaMap.size() << " len(omegaMap): " << omegaMap.size() << std::endl;
+  hpx::cout << "n: " << n_vertices << " len(thetaMap): " << thetaMap.size() << " len(omegaMap): " << omegaMap.size() << std::endl;
 
   auto start_time = std::chrono::steady_clock::now();
 

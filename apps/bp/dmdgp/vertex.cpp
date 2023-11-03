@@ -1,7 +1,7 @@
 #include "bp.hpp"
 
 // Calculate the angle between consecutive triplets of atoms using cosine rule
-double calculateTheta(const std::map<std::pair<int, int>, double> &records, int i)
+double calculateTheta(const std::map<std::pair<int, int>, DataRecord *> &records, int i)
 {
     int im1 = i - 1;
     int im2 = i - 2;
@@ -33,7 +33,7 @@ double calculateTheta(const std::map<std::pair<int, int>, double> &records, int 
 }
 
 // Calculate the angle between atoms at indices i-3, i-2, i-1, and i using cosine rule
-double calculateOmega(const std::map<std::pair<int, int>, double> &lbMap, int i)
+double calculateOmega(const std::map<std::pair<int, int>, DataRecord *> &records, int i)
 {
     double a, b, c, e, f, cosOmega;
     int im3 = i - 3;
@@ -41,25 +41,25 @@ double calculateOmega(const std::map<std::pair<int, int>, double> &lbMap, int i)
     int im1 = i - 1;
 
     // Check if the lb values exist in the map
-    auto it1 = lbMap.find({im3, im2});
-    auto it2 = lbMap.find({im3, im1});
-    auto it3 = lbMap.find({im3, i});
-    auto it4 = lbMap.find({im2, im1});
-    auto it5 = lbMap.find({im2, i});
-    auto it6 = lbMap.find({im1, i});
+    auto it1 = records.find({im3, im2});
+    auto it2 = records.find({im3, im1});
+    auto it3 = records.find({im3, i});
+    auto it4 = records.find({im2, im1});
+    auto it5 = records.find({im2, i});
+    auto it6 = records.find({im1, i});
 
-    if (it1 == lbMap.end() || it2 == lbMap.end() || it3 == lbMap.end() || it4 == lbMap.end() || it5 == lbMap.end() || it6 == lbMap.end())
+    if (it1 == records.end() || it2 == records.end() || it3 == records.end() || it4 == records.end() || it5 == records.end() || it6 == records.end())
     {
         throw std::runtime_error("Lower bounds not found for the quadruplet.");
     }
 
     // Retrieve the lower bounds (lb) values
-    double d_im3_im2 = it1->second;
-    double d_im3_im1 = it2->second;
-    double d_im3_i = it3->second;
-    double d_im2_im1 = it4->second;
-    double d_im2_i = it5->second;
-    double d_im1_i = it6->second;
+    double d_im3_im2 = it1->second->lb;
+    double d_im3_im1 = it2->second->lb;
+    double d_im3_i = it3->second->lb;
+    double d_im2_im1 = it4->second->lb;
+    double d_im2_i = it5->second->lb;
+    double d_im1_i = it6->second->lb;
 
     a = (d_im3_im2 * d_im3_im2 + d_im2_i * d_im2_i - d_im3_i * d_im3_i) / (2.0 * d_im3_im2 * d_im2_i);
     b = (d_im2_i * d_im2_i + d_im2_im1 * d_im2_im1 - d_im1_i * d_im1_i) / (2.0 * d_im2_i * d_im2_im1);
@@ -80,7 +80,7 @@ double calculateOmega(const std::map<std::pair<int, int>, double> &lbMap, int i)
 
 // Function to calculate and return a map of angles for vertices i from 3 to n
 void calculateAnglesForVertices(
-    const std::map<std::pair<int, int>, double> &lbMap, int n,
+    const std::map<std::pair<int, int>, DataRecord *> &records, int n,
     std::map<std::pair<int, int>, double> &thetaMap,
     std::map<std::pair<int, int>, double> &omegaMap)
 {
