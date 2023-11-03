@@ -39,9 +39,14 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   auto inputFile = opts["mdfile"].as<std::string>();
 
+  int n_vertices;
+
   ParsedData data = parseFile(inputFile);
-  std::vector<DataRecord> instance = readDataFile(data.file);
-  std::map<std::pair<int, int>, DataRecord *> recordMap = createDataRecordMap(instance);
+  std::vector<DataRecord> instance = readDataFile(data.file, n_vertices);
+  std::map<std::pair<int, int>, DataRecord *> references = createDataRecordMap(instance);
+
+  // Calculate the angles θ among consecutive triplets of vertices
+  std::map<std::pair<int, int>, double> angleMap = calculateThetasForVertices(references, n_vertices);
 
   auto start_time = std::chrono::steady_clock::now();
 

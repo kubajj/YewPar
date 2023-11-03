@@ -53,7 +53,7 @@ ParsedData parseFile(const std::string &filename)
     return data;
 }
 
-std::vector<DataRecord> readDataFile(const std::string &filename)
+std::vector<DataRecord> readDataFile(const std::string &filename, int &maxId)
 {
     std::vector<DataRecord> records;
     std::ifstream file(filename);
@@ -64,6 +64,7 @@ std::vector<DataRecord> readDataFile(const std::string &filename)
     }
 
     std::string line;
+    maxId = 0; // Initialize maxId
 
     while (std::getline(file, line))
     {
@@ -79,6 +80,9 @@ std::vector<DataRecord> readDataFile(const std::string &filename)
             record.lb >> record.ub >> record.Name1 >> record.Name2 >> record.groupName1 >> record.groupName2;
 
         records.push_back(record);
+
+        // Update maxId with the maximum of Id1 and Id2
+        maxId = std::max({maxId, record.Id1, record.Id2});
     }
 
     return records;

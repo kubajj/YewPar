@@ -43,6 +43,10 @@ struct DataRecord
    std::string groupName2;
 };
 
+// readfile.cpp
 ParsedData parseFile(const std::string &filename);
-std::vector<DataRecord> readDataFile(const std::string &filename);
+std::vector<DataRecord> readDataFile(const std::string &filename, int &maxId));
 std::map<std::pair<int, int>, DataRecord *> createDataRecordMap(const std::vector<DataRecord> &records);
+
+// vertex.cpp
+std::map<std::pair<int, int>, double> calculateThetasForVertices(const std::map<std::pair<int, int>, double> &records, int n);
