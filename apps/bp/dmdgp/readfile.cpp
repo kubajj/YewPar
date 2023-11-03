@@ -88,7 +88,7 @@ std::vector<DataRecord> readDataFile(const std::string &filename, int &maxId)
     return records;
 }
 
-std::map<std::pair<int, int>, DataRecord *> createDataRecordMap(const std::vector<DataRecord> &records)
+std::map<std::pair<int, int>, DataRecord *> createDataRecordMap(std::vector<DataRecord> &records)
 {
     std::map<std::pair<int, int>, DataRecord *> recordMap;
 

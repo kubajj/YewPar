@@ -11,6 +11,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 #endif
 
 struct MethodParameters
@@ -50,6 +51,6 @@ std::map<std::pair<int, int>, DataRecord *> createDataRecordMap(const std::vecto
 
 // vertex.cpp
 void calculateAnglesForVertices(
-    const std::map<std::pair<int, int>, double> &lbMap, int n,
+    const std::map<std::pair<int, int>, DataRecord *> &records, int n,
     std::map<std::pair<int, int>, double> &thetaMap,
     std::map<std::pair<int, int>, double> &omegaMap);
