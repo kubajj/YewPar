@@ -22,11 +22,13 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, std::map<std::pair<int, int>, 
   // constructor
   GenNode(const std::map<std::pair<int, int>, DataRecord *> &records, const DMDGPNode &node)
   {
+    // Body
   }
 
   // next
   DMDGPNode next() override
   {
+    return;
   }
 };
 
@@ -40,11 +42,17 @@ int hpx_main(hpx::program_options::variables_map &opts)
   }
 
   // Check if the help option was provided
-  g
+  if (opts.count("help"))
+  {
+    hpx::cout << desc_commandline << std::endl
+              << "Note: When using -1, options -p and -P have the same effect" << std::endl;
+    hpx::finalize();
+    return EXIT_FAILURE;
+  }
 
-      // hpx::program_options::notify(opts);
+  // hpx::program_options::notify(opts);
 
-      auto inputFile = opts["mdfile"].as<std::string>();
+  auto inputFile = opts["mdfile"].as<std::string>();
 
   int n_vertices;
 
@@ -70,15 +78,11 @@ int hpx_main(hpx::program_options::variables_map &opts)
   /*
     Main body
   */
-  DMDGPSol sol = placeFirstThreeVertices(const references, const thetaMap);
+  DMDGPSol sol = placeFirstThreeVertices(references, thetaMap);
   DMDGPNode root = {4, sol};
   if (skeletonType == "seq")
   {
-    sol = YewPar::Skeletons::Seq<GenNode,
-                                 // YewPar::Skeletons::API::Decision,
-                                 // YewPar::Skeletons::API::BoundFunction<upperBound_func>,
-                                 // YewPar::Skeletons::API::PruneLevel>
-                                 >::search(references, root);
+    sol = YewPar::Skeletons::Seq<GenNode, YewPar::Skeletons::API::Decision>::search(references, root);
   }
   else
   {
