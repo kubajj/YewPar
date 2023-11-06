@@ -60,12 +60,20 @@ struct DMDGPSol
 
 struct DMDGPNode
 {
+   friend class boost::serialization::access;
    int id;
    DMDGPSol sol;
 
    int getObj() const
    {
       return id;
+   }
+
+   template <class Archive>
+   void serialize(Archive &ar, const unsigned int version)
+   {
+      ar & sol;
+      ar & id;
    }
 };
 

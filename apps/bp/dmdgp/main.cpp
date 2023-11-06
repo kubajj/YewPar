@@ -28,7 +28,7 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, std::map<std::pair<int, int>, 
   // next
   DMDGPNode next() override
   {
-    return;
+    return NULL;
   }
 };
 
@@ -37,15 +37,6 @@ int hpx_main(hpx::program_options::variables_map &opts)
   if (!opts.count("mdfile"))
   {
     hpx::cerr << "You must provide an MDFile input file" << std::endl;
-    hpx::finalize();
-    return EXIT_FAILURE;
-  }
-
-  // Check if the help option was provided
-  if (opts.count("help"))
-  {
-    hpx::cout << desc_commandline << std::endl
-              << "Note: When using -1, options -p and -P have the same effect" << std::endl;
     hpx::finalize();
     return EXIT_FAILURE;
   }

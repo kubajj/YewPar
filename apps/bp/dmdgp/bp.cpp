@@ -32,7 +32,7 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, DataRecord 
     else
     {
         std::cerr << "Something went wrong when positioning second vertex" << std::endl;
-        return EXIT_FAILURE;
+        return NULL;
     }
     vertex2.x = -d12;
     vertex2.y = 0.0;
@@ -57,7 +57,7 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, DataRecord 
     else
     {
         std::cerr << "Something went wrong when positioning third vertex" << std::endl;
-        return EXIT_FAILURE;
+        return NULL;
     }
     ct13 = std::cos(theta13);
     st13 = std::sin(theta13);
