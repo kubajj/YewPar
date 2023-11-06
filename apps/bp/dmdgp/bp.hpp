@@ -62,6 +62,11 @@ struct DMDGPNode
 {
    int id;
    DMDGPSol sol;
+
+   int getObj() const
+   {
+      return id;
+   }
 };
 
 // readfile.cpp
