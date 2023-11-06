@@ -44,6 +44,26 @@ struct DataRecord
    std::string groupName2;
 };
 
+struct DMDGPVertexPosition
+{
+   // char atom[3];
+   // char amino[4];
+   double x;
+   double y;
+   double z;
+};
+
+struct DMDGPSol
+{
+   std::vector<DMDGPVertexPosition> vertices;
+};
+
+struct DMDGPNode
+{
+   int id;
+   DMDGPSol sol;
+};
+
 // readfile.cpp
 ParsedData parseFile(const std::string &filename);
 std::vector<DataRecord> readDataFile(const std::string &filename, int &maxId);
@@ -51,6 +71,12 @@ std::map<std::pair<int, int>, DataRecord *> createDataRecordMap(std::vector<Data
 
 // vertex.cpp
 void calculateAnglesForVertices(
-    const std::map<std::pair<int, int>, DataRecord *> &records, int n,
+    const std::map<std::pair<int, int>, DataRecord *> &references, int n,
     std::map<std::pair<int, int>, double> &thetaMap,
     std::map<std::pair<int, int>, double> &omegaMap);
+
+// bp.cpp
+DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, DataRecord *> &references, const std::map<std::pair<int, int>, double> &thetaMap);
+
+// pruningtest.cpp
+bool pruningtest(int natoms, const std::vector<DataRecord> &records, std::map<std::pair<int, int>, DataRecord *> &references, DMDGPSol &sol);

@@ -16,32 +16,41 @@
 
 #include "bp.hpp"
 
+struct GenNode : YewPar::NodeGenerator<DMDGPNode, std::map<std::pair<int, int>, DataRecord *>>
+{
+
+  // constructor
+  GenNode(const std::map<std::pair<int, int>, DataRecord *> &records, const DMDGPNode &node)
+  {
+  }
+
+  // next
+  DMDGPNode next() override
+  {
+  }
+};
+
 int hpx_main(hpx::program_options::variables_map &opts)
 {
-  /*
-  if (!opts.count("input-file")) {
-    std::cerr << "You must provide an DIMACS input file with \n";
+  if (!opts.count("mdfile"))
+  {
+    hpx::cerr << "You must provide an MDFile input file" << std::endl;
     hpx::finalize();
     return EXIT_FAILURE;
   }
-  */
 
   // Check if the help option was provided
-  // if (vm.count("help"))
-  // {
-  //   hpx::cout << desc_commandline << std::endl
-  //             << "Note: When using -1, options -p and -P have the same effect" << std::endl;
-  //   hpx::finalize();
-  //   return EXIT_FAILURE;
-  // }
+  g
 
-  // hpx::program_options::notify(opts);
+      // hpx::program_options::notify(opts);
 
-  auto inputFile = opts["mdfile"].as<std::string>();
+      auto inputFile = opts["mdfile"].as<std::string>();
 
   int n_vertices;
 
   ParsedData data = parseFile(inputFile);
+
+  // Note(kubajj): n_vertices is 1..n (not 0 based)
   std::vector<DataRecord> instance = readDataFile(data.file, n_vertices);
   std::map<std::pair<int, int>, DataRecord *> references = createDataRecordMap(instance);
 
@@ -49,7 +58,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
   std::map<std::pair<int, int>, double> thetaMap;
   std::map<std::pair<int, int>, double> omegaMap;
 
-  // Calculate the angles θ among consecutive triplets of vertices
+  // Calculate the angles θ and ω among consecutive triplets/quadruples of vertices
   calculateAnglesForVertices(references, n_vertices, thetaMap, omegaMap);
 
   hpx::cout << "n: " << n_vertices << " len(thetaMap): " << thetaMap.size() << " len(omegaMap): " << omegaMap.size() << std::endl;
@@ -61,7 +70,17 @@ int hpx_main(hpx::program_options::variables_map &opts)
   /*
     Main body
   */
-  if (skeletonType != "seq")
+  DMDGPSol sol = placeFirstThreeVertices(const references, const thetaMap);
+  DMDGPNode root = {4, sol};
+  if (skeletonType == "seq")
+  {
+    sol = YewPar::Skeletons::Seq<GenNode,
+                                 // YewPar::Skeletons::API::Decision,
+                                 // YewPar::Skeletons::API::BoundFunction<upperBound_func>,
+                                 // YewPar::Skeletons::API::PruneLevel>
+                                 >::search(references, root);
+  }
+  else
   {
     hpx::cout << "Invalid skeleton type option. Only seq implemented so far." << std::endl;
     hpx::finalize();

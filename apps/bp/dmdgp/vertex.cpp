@@ -38,7 +38,7 @@ double calculateCosOmega(const std::map<std::pair<int, int>, DataRecord *> &refe
     a = calculateCosTheta(references, i, im2, im3);
     b = calculateCosTheta(references, im1, im2, i);
     c = calculateCosTheta(references, im1, im2, im3);
-    // a = (d_im3_im2 * d_im3_im2 + d_im2_i * d_im2_i - d_im3_i * d_im3_i) / (2.0 * d_im3_im2 * d_im2_i);
+    //  a = (d_im3_im2 * d_im3_im2 + d_im2_i * d_im2_i - d_im3_i * d_im3_i) / (2.0 * d_im3_im2 * d_im2_i);
     //  b = (d_im2_i * d_im2_i + d_im2_im1 * d_im2_im1 - d_im1_i * d_im1_i) / (2.0 * d_im2_i * d_im2_im1);
     //  c = (d_im3_im2 * d_im3_im2 + d_im2_im1 * d_im2_im1 - d_im3_im1 * d_im3_im1) / (2.0 * d_im3_im2 * d_im2_im1);
     e = 1.0 - b * b;
