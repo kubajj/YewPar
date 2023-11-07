@@ -41,7 +41,10 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, searchSpace>
   {
     DMDGPNode root;
     root.id = 1;
-    root.qi.fill(0.0);
+    for (int i = 0; i < 12; i++)
+    {
+      root.qi[i] = 0.0;
+    }
     DMDGPSol sol;
     DMDGPVertexPosition vertex1;
     root.sol.vertices.push_back(vertex1);
@@ -88,7 +91,10 @@ int hpx_main(hpx::program_options::variables_map &opts)
   */
   DMDGPSol sol = placeFirstThreeVertices(distanceMap, thetaMap);
   DMDGPNode root = {id = 4, sol = sol};
-  root.qi.fill(0.0);
+  for (int i = 0; i < 12; i++)
+  {
+    root.qi[i] = 0.0;
+  }
   searchSpace s = {distanceMap, thetaMap, omegaMap};
   if (skeletonType == "seq")
   {
