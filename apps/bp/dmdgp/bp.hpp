@@ -58,27 +58,6 @@ struct DMDGPSol
    std::vector<DMDGPVertexPosition> vertices;
 };
 
-struct DMDGPNode
-{
-   friend class boost::serialization::access;
-   int id;
-   double qi[12];
-   DMDGPSol sol;
-
-   int getObj() const
-   {
-      return id;
-   }
-
-   template <class Archive>
-   void serialize(Archive &ar, const unsigned int version)
-   {
-      ar & id;
-      ar & qi;
-      ar & sol;
-   }
-};
-
 // readfile.cpp
 ParsedData parseFile(const std::string &filename);
 std::vector<DataRecord> readDataFile(const std::string &filename, int &maxId);

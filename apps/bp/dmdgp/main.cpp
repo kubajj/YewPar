@@ -23,6 +23,45 @@ struct searchSpace
   std::map<std::pair<int, int>, double> omegaMap;
 };
 
+struct DMDGPNode
+{
+  friend class boost::serialization::access;
+  int id;
+  double qi[12];
+  DMDGPSol sol;
+
+  int getObj() const
+  {
+    return id;
+  }
+
+  template <class Archive>
+  void serialize(Archive &ar, const unsigned int version)
+  {
+    ar & id;
+    ar & qi;
+    ar & sol;
+  }
+};
+
+struct CountSols : YewPar::Enumerator<DMDGPNode, std::uint64_t>
+{
+  std::uint64_t count;
+  CountSols() : count(0){};
+
+  void accumulate(const Node &n) override
+  {
+    count++;
+  }
+
+  void combine(const std::uint64_t &other) override
+  {
+    count += other;
+  }
+
+  std::uint64_t get() override { return count; }
+};
+
 struct GenNode : YewPar::NodeGenerator<DMDGPNode, searchSpace>
 {
 
@@ -100,8 +139,10 @@ int hpx_main(hpx::program_options::variables_map &opts)
   searchSpace s = {distanceMap, thetaMap, omegaMap};
   if (skeletonType == "seq")
   {
-    // Add count sols from nqueens
-    auto searchSolution = YewPar::Skeletons::Seq<GenNode, YewPar::Skeletons::API::Enumeration>::search(searchSpace, root);
+    auto count = YewPar::Skeletons::Seq<GenNode,
+                                        YewPar::Skeletons::API::Enumeration,
+                                        YewPar::Skeletons::API::Enumerator<CountSols>,
+                                        YewPar::Skeletons::API::DepthLimited>::search(searchSpace, root, searchParameters);
   }
   else
   {
