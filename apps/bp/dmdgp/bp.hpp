@@ -3,6 +3,7 @@
 #include <iostream>
 #include <numeric>
 #include <algorithm>
+#icnlude < array>
 #include <vector>
 #include <map>
 #include <chrono>
