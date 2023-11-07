@@ -39,7 +39,12 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, searchSpace>
   // next
   DMDGPNode next() override
   {
-    DMDGPSol sol = placeFirstThreeVertices(distanceMap, thetaMap);
+    DMDGPSol sol;
+    DMDGPVertexPosition vertex1;
+    vertex1.x = 0.0;
+    vertex1.y = 0.0;
+    vertex1.z = 0.0;
+    sol.vertices.push_back(vertex1);
     DMDGPNode root = {4, [], sol};
     return root;
   }
@@ -84,10 +89,11 @@ int hpx_main(hpx::program_options::variables_map &opts)
   */
   DMDGPSol sol = placeFirstThreeVertices(distanceMap, thetaMap);
   DMDGPNode root = {4, [], sol};
+  searchSpace s = {distanceMap, thetaMap, omegaMap};
   if (skeletonType == "seq")
   {
     // Add count sols from nqueens
-    auto searchSolution = YewPar::Skeletons::Seq<GenNode, YewPar::Skeletons::API::Enumeration>::search(distanceMap, root);
+    auto searchSolution = YewPar::Skeletons::Seq<GenNode, YewPar::Skeletons::API::Enumeration>::search(const searchSpace, root);
   }
   else
   {
