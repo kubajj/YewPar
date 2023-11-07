@@ -90,7 +90,9 @@ int hpx_main(hpx::program_options::variables_map &opts)
     Main body
   */
   DMDGPSol sol = placeFirstThreeVertices(distanceMap, thetaMap);
-  DMDGPNode root = {id = 4, sol = sol};
+  DMDGPNode root;
+  root.id = 1;
+  root.sol = sol;
   for (int i = 0; i < 12; i++)
   {
     root.qi[i] = 0.0;
