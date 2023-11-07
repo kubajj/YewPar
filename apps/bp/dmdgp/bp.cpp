@@ -7,7 +7,7 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
        // Matrices B1..B3
        // Qi = B4 \cdots Bi
        // last row 0,0,0,1 is never used, so we don't store it
-       double b1[12], b2[12], b3[12];
+       // double b1[12], b2[12], b3[12];
 
        // First Vertex (0, 0, 0)
        DMDGPVertexPosition vertex1;
@@ -17,9 +17,9 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
        // vertex1.atom = find the name of the atom;
        // vertex1.amino = find the name of the amino acid;
        sol.vertices.push_back(vertex1);
-       b1 = [ 1, 0, 0, 0,
-              0, 1, 0, 0,
-              0, 0, 1, 0 ];
+       double b1[12] = {1, 0, 0, 0,
+                        0, 1, 0, 0,
+                        0, 0, 1, 0};
 
        // Second Vertex
        DMDGPVertexPosition vertex2;
@@ -30,9 +30,9 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
        vertex2.y = 0.0;
        vertex2.z = 0.0;
        sol.vertices.push_back(vertex2);
-       b2 = [ -1, 0, 0, -d12,
-              0, 1, -1, 0,
-              0, 0, 1, 0 ];
+       double b2[12] = {-1, 0, 0, -d12,
+                        0, 1, -1, 0,
+                        0, 0, 1, 0};
 
        // Third Vertex
        DMDGPVertexPosition vertex3;
@@ -49,9 +49,9 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
        vertex3.y = d23 * st13;
        vertex3.z = 0.0;
        sol.vertices.push_back(vertex3);
-       b3 = [ -ct13, -st13, 0, -d23 * ct13,
-              st13, -ct13, 0, d23 * st13,
-              0, 0, 1, 0 ];
+       double b3[12] = {-ct13, -st13, 0, -d23 * ct13,
+                        st13, -ct13, 0, d23 * st13,
+                        0, 0, 1, 0};
 
        return sol;
 }
