@@ -73,7 +73,8 @@ int hpx_main(hpx::program_options::variables_map &opts)
   DMDGPNode root = {4, sol};
   if (skeletonType == "seq")
   {
-    sol = YewPar::Skeletons::Seq<GenNode, YewPar::Skeletons::API::Decision>::search(references, root);
+    // Add count sols from nqueens
+    auto searchSolution = YewPar::Skeletons::Seq<GenNode, YewPar::Skeletons::API::Enumeration>::search(references, root);
   }
   else
   {
