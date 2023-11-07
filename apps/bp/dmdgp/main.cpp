@@ -49,7 +49,7 @@ struct CountSols : YewPar::Enumerator<DMDGPNode, std::uint64_t>
   std::uint64_t count;
   CountSols() : count(0){};
 
-  void accumulate(const Node &n) override
+  void accumulate(const DMDGPNode &n) override
   {
     count++;
   }
