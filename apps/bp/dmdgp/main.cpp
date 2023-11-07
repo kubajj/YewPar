@@ -16,13 +16,24 @@
 
 #include "bp.hpp"
 
-struct GenNode : YewPar::NodeGenerator<DMDGPNode, std::map<std::pair<int, int>, DataRecord *>>
+struct searchSpace
+{
+  std::map<std::pair<int, int>, double> distanceMap;
+  std::map<std::pair<int, int>, double> thetaMap;
+  std::map<std::pair<int, int>, double> omegaMap;
+};
+
+struct GenNode : YewPar::NodeGenerator<DMDGPNode, searchSpace>
 {
 
   // constructor
-  GenNode(const std::map<std::pair<int, int>, DataRecord *> &records, const DMDGPNode &node)
+  GenNode(const searchSpace, const DMDGPNode &node)
   {
     // Body
+    // Calculate Qi
+    // Prune
+    // Get numChildren
+    numChildren = 2;
   }
 
   // next
@@ -51,14 +62,14 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   // Note(kubajj): n_vertices is 1..n (not 0 based)
   std::vector<DataRecord> instance = readDataFile(data.file, n_vertices);
-  std::map<std::pair<int, int>, DataRecord *> references = createDataRecordMap(instance);
+  std::map<std::pair<int, int>, double> distanceMap = createDataRecordMap(instance);
 
   // Create empty maps for theta and omega
   std::map<std::pair<int, int>, double> thetaMap;
   std::map<std::pair<int, int>, double> omegaMap;
 
   // Calculate the angles θ and ω among consecutive triplets/quadruples of vertices
-  calculateAnglesForVertices(references, n_vertices, thetaMap, omegaMap);
+  calculateAnglesForVertices(distanceMap, n_vertices, thetaMap, omegaMap);
 
   hpx::cout << "n: " << n_vertices << " len(thetaMap): " << thetaMap.size() << " len(omegaMap): " << omegaMap.size() << std::endl;
 
@@ -69,12 +80,12 @@ int hpx_main(hpx::program_options::variables_map &opts)
   /*
     Main body
   */
-  DMDGPSol sol = placeFirstThreeVertices(references, thetaMap);
+  DMDGPSol sol = placeFirstThreeVertices(distanceMap, thetaMap);
   DMDGPNode root = {4, sol};
   if (skeletonType == "seq")
   {
     // Add count sols from nqueens
-    auto searchSolution = YewPar::Skeletons::Seq<GenNode, YewPar::Skeletons::API::Enumeration>::search(references, root);
+    auto searchSolution = YewPar::Skeletons::Seq<GenNode, YewPar::Skeletons::API::Enumeration>::search(distanceMap, root);
   }
   else
   {

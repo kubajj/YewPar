@@ -62,6 +62,7 @@ struct DMDGPNode
 {
    friend class boost::serialization::access;
    int id;
+   double qi[12];
    DMDGPSol sol;
 
    int getObj() const
@@ -72,24 +73,25 @@ struct DMDGPNode
    template <class Archive>
    void serialize(Archive &ar, const unsigned int version)
    {
-      ar & sol;
       ar & id;
+      ar & qi;
+      ar & sol;
    }
 };
 
 // readfile.cpp
 ParsedData parseFile(const std::string &filename);
 std::vector<DataRecord> readDataFile(const std::string &filename, int &maxId);
-std::map<std::pair<int, int>, DataRecord *> createDataRecordMap(std::vector<DataRecord> &records);
+std::map<std::pair<int, int>, double> createDataRecordMap(std::vector<DataRecord> &records);
 
 // vertex.cpp
 void calculateAnglesForVertices(
-    const std::map<std::pair<int, int>, DataRecord *> &references, int n,
+    const std::map<std::pair<int, int>, double> &distanceMap, int n,
     std::map<std::pair<int, int>, double> &thetaMap,
     std::map<std::pair<int, int>, double> &omegaMap);
 
 // bp.cpp
-DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, DataRecord *> &references, const std::map<std::pair<int, int>, double> &thetaMap);
+DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &distanceMap, const std::map<std::pair<int, int>, double> &thetaMap);
 
 // pruningtest.cpp
-bool pruningtest(int natoms, const std::vector<DataRecord> &records, std::map<std::pair<int, int>, DataRecord *> &references, DMDGPSol &sol);
+bool pruningtest(int natoms, const std::vector<DataRecord> &records, std::map<std::pair<int, int>, double> &distanceMap, DMDGPSol &sol);

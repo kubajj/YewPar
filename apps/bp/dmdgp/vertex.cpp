@@ -1,24 +1,24 @@
 #include "bp.hpp"
 
 // Calculate the angle between consecutive triplets of atoms using cosine rule
-double calculateCosTheta(const std::map<std::pair<int, int>, DataRecord *> &references, int i, int im1, int im2)
+double calculateCosTheta(const std::map<std::pair<int, int>, double> &distanceMap, int i, int im1, int im2)
 {
 
     // Check if the lb values exist in the map
-    auto it1 = references.find({im2, im1});
-    auto it2 = references.find({im1, i});
-    auto it3 = references.find({im2, i});
+    auto it1 = distanceMap.find({im2, im1});
+    auto it2 = distanceMap.find({im1, i});
+    auto it3 = distanceMap.find({im2, i});
 
-    if (it1 == references.end() || it2 == references.end() || it3 == references.end())
+    if (it1 == distanceMap.end() || it2 == distanceMap.end() || it3 == distanceMap.end())
     {
         throw std::runtime_error("Lower bounds not found for the triplet.");
     }
 
     // Retrieve the lower bounds (lb) values
     // Note(kubajj): it->first is the key and it->second is the value
-    double d_im2_im1 = it1->second->lb;
-    double d_im1_i = it2->second->lb;
-    double d_im2_i = it3->second->lb;
+    double d_im2_im1 = it1->second;
+    double d_im1_i = it2->second;
+    double d_im2_i = it3->second;
 
     // Compute the cosine of the angle
     // Using cosine rule:
@@ -31,13 +31,13 @@ double calculateCosTheta(const std::map<std::pair<int, int>, DataRecord *> &refe
 }
 
 // Calculate the angle between atoms at indices i-3, i-2, i-1, and i using cosine rule
-double calculateCosOmega(const std::map<std::pair<int, int>, DataRecord *> &references, int i, int im1, int im2, int im3)
+double calculateCosOmega(const std::map<std::pair<int, int>, double> &distanceMap, int i, int im1, int im2, int im3)
 {
     double a, b, c, e, f, cosOmega;
 
-    a = calculateCosTheta(references, i, im2, im3);
-    b = calculateCosTheta(references, im1, im2, i);
-    c = calculateCosTheta(references, im1, im2, im3);
+    a = calculateCosTheta(distanceMap, i, im2, im3);
+    b = calculateCosTheta(distanceMap, im1, im2, i);
+    c = calculateCosTheta(distanceMap, im1, im2, im3);
     //  a = (d_im3_im2 * d_im3_im2 + d_im2_i * d_im2_i - d_im3_i * d_im3_i) / (2.0 * d_im3_im2 * d_im2_i);
     //  b = (d_im2_i * d_im2_i + d_im2_im1 * d_im2_im1 - d_im1_i * d_im1_i) / (2.0 * d_im2_i * d_im2_im1);
     //  c = (d_im3_im2 * d_im3_im2 + d_im2_im1 * d_im2_im1 - d_im3_im1 * d_im3_im1) / (2.0 * d_im3_im2 * d_im2_im1);
@@ -57,14 +57,14 @@ double calculateCosOmega(const std::map<std::pair<int, int>, DataRecord *> &refe
 
 // Function to calculate and return a map of angles for vertices i from 3 to n
 void calculateAnglesForVertices(
-    const std::map<std::pair<int, int>, DataRecord *> &references, int n,
+    const std::map<std::pair<int, int>, double> &distanceMap, int n,
     std::map<std::pair<int, int>, double> &thetaMap,
     std::map<std::pair<int, int>, double> &omegaMap)
 {
 
     try
     {
-        double angle = std::acos(calculateCosTheta(references, 3, 2, 1));
+        double angle = std::acos(calculateCosTheta(distanceMap, 3, 2, 1));
         // Store the angle in the angleMap with the key (im2, i)
         thetaMap[{1, 3}] = angle;
     }
@@ -81,10 +81,10 @@ void calculateAnglesForVertices(
 
         try
         {
-            double theta = std::acos(calculateCosTheta(references, i, im1, im2));
+            double theta = std::acos(calculateCosTheta(distanceMap, i, im1, im2));
             // Store the angle in the angleMap with the key (im2, i)
             thetaMap[{im2, i}] = theta;
-            double omega = std::acos(calculateCosOmega(references, i, im1, im2, im3));
+            double omega = std::acos(calculateCosOmega(distanceMap, i, im1, im2, im3));
             omegaMap[{im3, i}] = omega;
         }
         catch (const std::runtime_error &e)
