@@ -136,14 +136,14 @@ int hpx_main(hpx::program_options::variables_map &opts)
   {
     root.qi[i] = 0.0;
   }
-  searchSpace s = {distanceMap, thetaMap, omegaMap};
+  auto searchS = {distanceMap, thetaMap, omegaMap};
   if (skeletonType == "seq")
   {
     YewPar::Skeletons::API::Params<> searchParameters;
     auto count = YewPar::Skeletons::Seq<GenNode,
                                         YewPar::Skeletons::API::Enumeration,
                                         YewPar::Skeletons::API::Enumerator<CountSols>,
-                                        YewPar::Skeletons::API::DepthLimited>::search(searchSpace, root, searchParameters);
+                                        YewPar::Skeletons::API::DepthLimited>::search(searchS, root, searchParameters);
   }
   else
   {
