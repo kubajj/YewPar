@@ -25,7 +25,7 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
        DMDGPVertexPosition vertex2;
        auto iref12 = distanceMap.find({1, 2});
        double d12;
-       d12 = iref12->second->lb;
+       d12 = iref12->second;
        vertex2.x = -d12;
        vertex2.y = 0.0;
        vertex2.z = 0.0;
@@ -41,7 +41,7 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
        double d23, theta13;
        // Cosine and sine of theta13
        double ct13, st13;
-       d23 = iref23->second->lb;
+       d23 = iref23->second;
        theta13 = itheta13->second;
        ct13 = std::cos(theta13);
        st13 = std::sin(theta13);
