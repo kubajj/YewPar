@@ -4,6 +4,7 @@
 #include <numeric>
 #include <algorithm>
 #include <vector>
+#include <array>
 #include <map>
 #include <chrono>
 #include <memory>
@@ -58,6 +59,13 @@ struct DMDGPSol
    std::vector<DMDGPVertexPosition> vertices;
 };
 
+struct DMDGPMaps
+{
+   std::map<std::pair<int, int>, double> distanceMap;
+   std::map<std::pair<int, int>, double> thetaMap;
+   std::map<std::pair<int, int>, double> omegaMap;
+};
+
 // readfile.cpp
 ParsedData parseFile(const std::string &filename);
 std::vector<DataRecord> readDataFile(const std::string &filename, int &maxId);
@@ -74,10 +82,14 @@ DMDGPSol placeFirstThreeVertices(
     const std::map<std::pair<int, int>, double> &distanceMap,
     const std::map<std::pair<int, int>, double> &thetaMap,
     std::array<double, 12> &q3);
+void calculateBis(int i, std::array<double, 12> bi1, std::array<double, 12> bi2, const DMDGPMaps maps);
 
 // pruningtest.cpp
-bool pruningtest(
+bool pruningTest(
     int natoms,
     const std::vector<DataRecord> &records,
     std::map<std::pair<int, int>, double> &distanceMap,
     DMDGPSol &sol);
+
+// matrices.cpp
+std::array<double, 12> matrixProd(const std::array<double, 12> &qim1, const std::array<double, 12> &qi);

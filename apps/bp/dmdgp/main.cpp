@@ -16,13 +16,6 @@
 
 #include "bp.hpp"
 
-struct DMDGPMaps
-{
-  std::map<std::pair<int, int>, double> distanceMap;
-  std::map<std::pair<int, int>, double> thetaMap;
-  std::map<std::pair<int, int>, double> omegaMap;
-};
-
 struct DMDGPNode
 {
   friend class boost::serialization::access;
@@ -66,10 +59,17 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
 {
 
   // constructor
-  GenNode(const DMDGPMaps, const DMDGPNode &node)
+  GenNode(const DMDGPMaps &maps, const DMDGPNode &node)
   {
     // Body
-    // Calculate Qi
+    // Calculate Qi' and Qi''
+    std::array<double, 12> bi1;
+    std::array<double, 12> bi2;
+    calculateBis(node.id, bi1, bi2, maps);
+    std::array<double, 12> qi1;
+    std::array<double, 12> qi2;
+    qi1 = matrixProd(node.qi, bi1);
+    qi2 = matrixProd(node.qi, bi2);
     // Prune
     // Get numChildren
     numChildren = 2;

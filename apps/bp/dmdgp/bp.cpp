@@ -58,3 +58,33 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
 
        return sol;
 }
+
+void calculateBis(int i, std::array<double, 12> bi1, std::array<double, 12> bi2, const DMDGPMaps maps)
+{
+       int im1 = i - 1;
+       int im2 = i - 2;
+       int im3 = i - 3;
+       auto idistance = maps.distanceMap.find({im1, i});
+       auto itheta = maps.thetaMap.find({im2, i});
+       auto iomega = maps.omegaMap.find({im3, i});
+       double d, theta, omega, cosTheta, sinTheta, cosOmega, sinOmega;
+       d = idistance->second;
+       theta = itheta->second;
+       omega = iomega->second;
+       cosTheta = std::cos(theta);
+       sinTheta = std::sin(theta);
+       cosOmega = std::cos(omega);
+       sinOmega = std::sin(omega);
+       // clang-format off
+       bi1 = {
+         -cosTheta, -sinTheta, 0, -d*cosTheta,
+         sinTheta*cosOmega, -cosTheta*cosOmega, -sinOmega, d*sinTheta*cosOmega,
+         sinTheta*sinOmega, -cosTheta*sinOmega, cosOmega, d*sinTheta*sinOmega
+       };
+       bi2 = {
+         -cosTheta, -sinTheta, 0, -d*cosTheta,
+         sinTheta*cosOmega, -cosTheta*cosOmega, sinOmega, d*sinTheta*cosOmega,
+         -sinTheta*sinOmega, cosTheta*sinOmega, -cosOmega, d*sinTheta*sinOmega
+       };
+       // clang-format on
+}
