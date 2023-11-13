@@ -93,3 +93,15 @@ void calculateAnglesForVertices(
         }
     }
 }
+
+double calculateDistance(DMDGPVertexPosition v1, DMDGPVertexPosition v2)
+{
+    double px, py, pz, dist;
+
+    px = v2.x - v1.x;
+    py = v2.y - v1.y;
+    pz = v2.z - v1.z;
+    dist = sqrt(px * px + py * py + pz * pz);
+
+    return dist;
+};

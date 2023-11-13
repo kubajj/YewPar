@@ -76,6 +76,7 @@ void calculateAnglesForVertices(
     const std::map<std::pair<int, int>, double> &distanceMap, int n,
     std::map<std::pair<int, int>, double> &thetaMap,
     std::map<std::pair<int, int>, double> &omegaMap);
+double calculateDistance(DMDGPVertexPosition v1, DMDGPVertexPosition v2);
 
 // bp.cpp
 DMDGPSol placeFirstThreeVertices(
@@ -85,11 +86,7 @@ DMDGPSol placeFirstThreeVertices(
 void calculateBis(int i, std::array<double, 12> bi1, std::array<double, 12> bi2, const DMDGPMaps maps);
 
 // pruningtest.cpp
-bool pruningTest(
-    int natoms,
-    const std::vector<DataRecord> &records,
-    std::map<std::pair<int, int>, double> &distanceMap,
-    DMDGPSol &sol);
+bool pruningTest(int vertexId, const DMDGPMaps &maps, DMDGPSol &sol, DMDGPVertexPosition currentPosition);
 
 // matrices.cpp
 std::array<double, 12> matrixProd(const std::array<double, 12> &qim1, const std::array<double, 12> &qi);

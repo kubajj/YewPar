@@ -62,17 +62,50 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
   GenNode(const DMDGPMaps &maps, const DMDGPNode &node)
   {
     // Body
-    // Calculate Qi' and Qi''
+    // Calculate Qi' - qi1 and Qi'' - qi2
+    int nChildren = 2;
     std::array<double, 12> bi1;
     std::array<double, 12> bi2;
-    calculateBis(node.id, bi1, bi2, maps);
     std::array<double, 12> qi1;
     std::array<double, 12> qi2;
+    DMDGPSol sol1 = node.sol;
+    DMDGPSol sol2 = node.sol;
+    calculateBis(node.id, bi1, bi2, maps);
+    // Position 1
     qi1 = matrixProd(node.qi, bi1);
+    DMDGPVertexPosition position1;
+    position1.x = qi1[3];
+    position1.y = qi1[7];
+    position1.z = qi1[11];
+    if (pruningTest(node.id, maps, sol1, position1))
+    {
+      // Prune this branch
+      nChildren--;
+    }
+    else
+    {
+      // Don't prune
+      sol1.vertices.push_back(position1);
+    }
+    // Prune position1
+    // Position 2
     qi2 = matrixProd(node.qi, bi2);
-    // Prune
+    DMDGPVertexPosition position2;
+    position2.x = qi2[3];
+    position2.y = qi2[7];
+    position2.z = qi2[11];
+    if (pruningTest(node.id, maps, sol2, position2))
+    {
+      // Prune this branch
+      nChildren--;
+    }
+    else
+    {
+      // Don't prune
+      sol2.vertices.push_back(position2);
+    }
     // Get numChildren
-    numChildren = 2;
+    numChildren = nChildren;
   }
 
   // Return the next DMDGPNode to look into

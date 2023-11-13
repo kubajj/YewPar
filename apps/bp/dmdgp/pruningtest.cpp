@@ -1,7 +1,28 @@
 #include "bp.hpp"
 
-bool pruningTest(int natoms, const std::vector<DataRecord> &records, std::map<std::pair<int, int>, double> &distanceMap, DMDGPSol &sol)
+bool pruningTest(int vertexId, const DMDGPMaps &maps, DMDGPSol &sol, DMDGPVertexPosition currentPosition)
 {
-    // Figure out how to prune infeasible instances
-    return false;
+    int j = vertexId - 1;
+    bool prune = false;
+    double eps, dist, diff;
+    // Epsilon for precision
+    eps = 0.001;
+    for (int i = 0; i < j && !prune; i++)
+    {
+        auto idistance = maps.distanceMap.find({i, vertexId});
+        // There is a distance between i and current vertex
+        if (idistance != maps.distanceMap.end())
+        {
+            dist = calculateDistance(sol.vertices[i], currentPosition);
+            diff = dist - idistance->second;
+            if (diff < 0.0)
+                diff = -diff;
+            if (diff > eps)
+            {
+                prune = true;
+            }
+            // Can calculate partial lde here
+        }
+    }
+    return prune;
 }
