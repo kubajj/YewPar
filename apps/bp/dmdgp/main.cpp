@@ -57,10 +57,14 @@ struct CountSols : YewPar::Enumerator<DMDGPNode, std::uint64_t>
 
 struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
 {
+  DMDGPSol sol;
   std::array<double, 12> qi1;
   std::array<double, 12> qi2;
-  DMDGPSol sol1;
-  DMDGPSol sol2;
+  DMDGPVertexPosition position1;
+  DMDGPVertexPosition position2;
+  bool firstIsPruned;
+  bool first;
+  int id;
 
   // constructor
   GenNode(const DMDGPMaps &maps, const DMDGPNode &node)
@@ -70,59 +74,57 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
     int nChildren = 2;
     std::array<double, 12> bi1;
     std::array<double, 12> bi2;
-    sol1 = node.sol;
-    sol2 = node.sol;
+    sol = node.sol;
     calculateBis(node.id, bi1, bi2, maps);
     // Position 1
     qi1 = matrixProd(node.qi, bi1);
-    DMDGPVertexPosition position1;
     position1.x = qi1[3];
     position1.y = qi1[7];
     position1.z = qi1[11];
-    if (pruningTest(node.id, maps, sol1, position1))
+    if (pruningTest(node.id, maps, sol, position1))
     {
       // Prune this branch
       nChildren--;
+      firstIsPruned = true;
     }
     else
     {
       // Don't prune
-      sol1.vertices.push_back(position1);
+      firstIsPruned = false;
     }
     // Prune position1
     // Position 2
     qi2 = matrixProd(node.qi, bi2);
-    DMDGPVertexPosition position2;
     position2.x = qi2[3];
     position2.y = qi2[7];
     position2.z = qi2[11];
-    if (pruningTest(node.id, maps, sol2, position2))
+    if (pruningTest(node.id, maps, sol, position2))
     {
       // Prune this branch
       nChildren--;
     }
-    else
-    {
-      // Don't prune
-      sol2.vertices.push_back(position2);
-    }
     // Get numChildren
     numChildren = nChildren;
+    first = true;
   }
 
   // Return the next DMDGPNode to look into
   DMDGPNode next() override
   {
-    DMDGPNode root;
-    root.id = 1;
-    for (int i = 0; i < 12; i++)
+    DMDGPNode nextNode;
+    nextNode.sol = sol;
+    nextNode.id = id + 1;
+    if (!firstIsPruned && first)
     {
-      root.qi[i] = 0.0;
+      nextNode.qi = qi1;
+      nextNode.sol.vertices.push_back(position1);
     }
-    DMDGPSol sol;
-    DMDGPVertexPosition vertex1;
-    root.sol.vertices.push_back(vertex1);
-    return root;
+    else
+    {
+      nextNode.qi = qi2;
+      nextNode.sol.vertices.push_back(position2);
+    }
+    return nextNode;
   }
 };
 
