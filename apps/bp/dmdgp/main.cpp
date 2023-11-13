@@ -57,6 +57,10 @@ struct CountSols : YewPar::Enumerator<DMDGPNode, std::uint64_t>
 
 struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
 {
+  std::array<double, 12> qi1;
+  std::array<double, 12> qi2;
+  DMDGPSol sol1;
+  DMDGPSol sol2;
 
   // constructor
   GenNode(const DMDGPMaps &maps, const DMDGPNode &node)
@@ -66,10 +70,8 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
     int nChildren = 2;
     std::array<double, 12> bi1;
     std::array<double, 12> bi2;
-    std::array<double, 12> qi1;
-    std::array<double, 12> qi2;
-    DMDGPSol sol1 = node.sol;
-    DMDGPSol sol2 = node.sol;
+    sol1 = node.sol;
+    sol2 = node.sol;
     calculateBis(node.id, bi1, bi2, maps);
     // Position 1
     qi1 = matrixProd(node.qi, bi1);
