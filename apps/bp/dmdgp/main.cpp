@@ -62,7 +62,7 @@ struct CountSols : YewPar::Enumerator<DMDGPNode, std::uint64_t>
   std::uint64_t get() override { return count; }
 };
 
-struct GenNode : YewPar::SearchSpace<DMDGPNode, DMDGPMaps>
+struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
 {
 
   // constructor
