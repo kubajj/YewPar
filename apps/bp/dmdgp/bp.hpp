@@ -70,7 +70,14 @@ void calculateAnglesForVertices(
     std::map<std::pair<int, int>, double> &omegaMap);
 
 // bp.cpp
-DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &distanceMap, const std::map<std::pair<int, int>, double> &thetaMap);
+DMDGPSol placeFirstThreeVertices(
+    const std::map<std::pair<int, int>, double> &distanceMap,
+    const std::map<std::pair<int, int>, double> &thetaMap,
+    std::array<double, 12> &q3);
 
 // pruningtest.cpp
-bool pruningtest(int natoms, const std::vector<DataRecord> &records, std::map<std::pair<int, int>, double> &distanceMap, DMDGPSol &sol);
+bool pruningtest(
+    int natoms,
+    const std::vector<DataRecord> &records,
+    std::map<std::pair<int, int>, double> &distanceMap,
+    DMDGPSol &sol);

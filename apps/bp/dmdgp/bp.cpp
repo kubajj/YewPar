@@ -1,6 +1,6 @@
 #include "bp.hpp"
 
-DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &distanceMap, const std::map<std::pair<int, int>, double> &thetaMap)
+DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &distanceMap, const std::map<std::pair<int, int>, double> &thetaMap, std::array<double, 12> &q3)
 {
        DMDGPSol sol;
 
@@ -17,9 +17,9 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
        // vertex1.atom = find the name of the atom;
        // vertex1.amino = find the name of the amino acid;
        sol.vertices.push_back(vertex1);
-       double b1[12] = {1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0};
+       // double b1[12] = {1, 0, 0, 0,
+       //                  0, 1, 0, 0,
+       //                  0, 0, 1, 0};
 
        // Second Vertex
        DMDGPVertexPosition vertex2;
@@ -30,9 +30,9 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
        vertex2.y = 0.0;
        vertex2.z = 0.0;
        sol.vertices.push_back(vertex2);
-       double b2[12] = {-1, 0, 0, -d12,
-                        0, 1, -1, 0,
-                        0, 0, 1, 0};
+       // double b2[12] = {-1, 0, 0, -d12,
+       //                  0, 1, -1, 0,
+       //                  0, 0, 1, 0};
 
        // Third Vertex
        DMDGPVertexPosition vertex3;
@@ -49,9 +49,12 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
        vertex3.y = d23 * st13;
        vertex3.z = 0.0;
        sol.vertices.push_back(vertex3);
-       double b3[12] = {-ct13, -st13, 0, -d23 * ct13,
-                        st13, -ct13, 0, d23 * st13,
-                        0, 0, 1, 0};
+       // double b3[12] = {-ct13, -st13, 0, -d23 * ct13,
+       //                  st13, -ct13, 0, d23 * st13,
+       //                  0, 0, 1, 0};
+       q3 = {-ct13, -st13, 0, -d23 * ct13,
+             st13, -ct13, 0, d23 * st13,
+             0, 0, 1, 0};
 
        return sol;
 }

@@ -27,7 +27,7 @@ struct DMDGPNode
 {
   friend class boost::serialization::access;
   int id;
-  double qi[12];
+  std::array<double, 12> qi;
   DMDGPSol sol;
 
   int getObj() const
@@ -75,7 +75,7 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
     numChildren = 2;
   }
 
-  // next
+  // Return the next DMDGPNode to look into
   DMDGPNode next() override
   {
     DMDGPNode root;
@@ -128,14 +128,16 @@ int hpx_main(hpx::program_options::variables_map &opts)
   /*
     Main body
   */
-  DMDGPSol sol = placeFirstThreeVertices(distanceMap, thetaMap);
+  std::array<double, 12> q3;
+  DMDGPSol sol = placeFirstThreeVertices(distanceMap, thetaMap, q3);
   DMDGPNode root;
-  root.id = 1;
+  root.id = 3;
   root.sol = sol;
-  for (int i = 0; i < 12; i++)
-  {
-    root.qi[i] = 0.0;
-  }
+  root.qi = q3;
+  // for (int i = 0; i < 12; i++)
+  // {
+  //   root.qi[i] = 0.0;
+  // }
   DMDGPMaps searchS = {distanceMap, thetaMap, omegaMap};
   if (skeletonType == "seq")
   {
