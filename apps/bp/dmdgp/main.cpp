@@ -16,7 +16,7 @@
 
 #include "bp.hpp"
 
-struct SearchSpace
+struct DMDGPMaps
 {
   std::map<std::pair<int, int>, double> distanceMap;
   std::map<std::pair<int, int>, double> thetaMap;
@@ -62,11 +62,11 @@ struct CountSols : YewPar::Enumerator<DMDGPNode, std::uint64_t>
   std::uint64_t get() override { return count; }
 };
 
-struct GenNode : YewPar::SearchSpace<DMDGPNode, SearchSpace>
+struct GenNode : YewPar::SearchSpace<DMDGPNode, DMDGPMaps>
 {
 
   // constructor
-  GenNode(const SearchSpace, const DMDGPNode &node)
+  GenNode(const DMDGPMaps, const DMDGPNode &node)
   {
     // Body
     // Calculate Qi
@@ -136,7 +136,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
   {
     root.qi[i] = 0.0;
   }
-  SearchSpace searchS = {distanceMap, thetaMap, omegaMap};
+  DMDGPMaps searchS = {distanceMap, thetaMap, omegaMap};
   if (skeletonType == "seq")
   {
     YewPar::Skeletons::API::Params<> searchParameters;
