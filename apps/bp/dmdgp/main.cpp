@@ -212,32 +212,32 @@ int main(int argc, char *argv[])
 
   // clang-format off
   desc_commandline.add_options()
-      ("help,h", "Print this help message")
-      ( "skeleton-type",
+      ( "skeleton",
         hpx::program_options::value<std::string>()->default_value("seq"),
-        "Which skeleton to use: seq, depthbound, stacksteal, budget, or ordered"
+        //"Which skeleton to use: seq, depthbound, stacksteal, or budget"
+        "Which skeleton to use: only seq possible for now"
       )
       ( "mdfile",
         hpx::program_options::value<std::string>()->required(),
-        "Whhere to find the MDFile which contains specification of the instance and necessary fields"
-      )
-      ( "1", "The specified method stops at the first solution")
-      ( "-l",  hpx::program_options::value<unsigned>(),
-        "Specifies after how many solutions the method should stop"
-      )
-      ( "p", "Prints the best found solution in a text file")
-      ( "P", "Prints all found solutions")
-      ( "solutions,l",
-        hpx::program_options::value<unsigned>(),
-        "Specifies after how many solutions the method should stop"
-      )
-      ( "format, f",
-        hpx::program_options::value<std::string>()->default_value("xyz"),
-        "Specifies the output format (default is \"xyz\", may be changed to \"pdb\")"
-      )
-      ( "consec", "Verifies whether the consecutivity assumption is satisfied")
-      ( "nomonitor", "Does not show the current layer number during the execution to improve performance")
-      ("sym", hpx::program_options::value<unsigned>()->default_value(2), "Only one symmetric half of the tree is explored (argument may be 1 or 2)");
+        "Where to find the MDFile which contains specification of the instance and necessary fields"
+      );
+      // ( "1", "The specified method stops at the first solution")
+      // ( "-l",  hpx::program_options::value<unsigned>(),
+      //   "Specifies after how many solutions the method should stop"
+      // )
+      // ( "p", "Prints the best found solution in a text file")
+      // ( "P", "Prints all found solutions")
+      // ( "solutions,l",
+      //   hpx::program_options::value<unsigned>(),
+      //   "Specifies after how many solutions the method should stop"
+      // )
+      // ( "format, f",
+      //   hpx::program_options::value<std::string>()->default_value("xyz"),
+      //   "Specifies the output format (default is \"xyz\", may be changed to \"pdb\")"
+      // )
+      // ( "consec", "Verifies whether the consecutivity assumption is satisfied")
+      // ( "nomonitor", "Does not show the current layer number during the execution to improve performance")
+      // ("sym", hpx::program_options::value<unsigned>()->default_value(2), "Only one symmetric half of the tree is explored (argument may be 1 or 2)");
   // clang-format on
 
   YewPar::registerPerformanceCounters();
