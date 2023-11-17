@@ -71,41 +71,48 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
   {
     // Body
     // Calculate Qi' - qi1 and Qi'' - qi2
-    int nChildren = 2;
-    std::array<double, 12> bi1;
-    std::array<double, 12> bi2;
-    sol = node.sol;
-    calculateBis(node.id, bi1, bi2, maps);
-    // Position 1
-    qi1 = matrixProd(node.qi, bi1);
-    position1.x = qi1[3];
-    position1.y = qi1[7];
-    position1.z = qi1[11];
-    if (pruningTest(node.id, maps, sol, position1))
+    if (node.id == maps.number_of_vertices)
     {
-      // Prune this branch
-      nChildren--;
-      firstIsPruned = true;
+      numChildren = 0;
     }
     else
     {
-      // Don't prune
-      firstIsPruned = false;
+      int nChildren = 2;
+      std::array<double, 12> bi1;
+      std::array<double, 12> bi2;
+      sol = node.sol;
+      calculateBis(node.id, bi1, bi2, maps);
+      // Position 1
+      qi1 = matrixProd(node.qi, bi1);
+      position1.x = qi1[3];
+      position1.y = qi1[7];
+      position1.z = qi1[11];
+      if (pruningTest(node.id, maps, sol, position1))
+      {
+        // Prune this branch
+        nChildren--;
+        firstIsPruned = true;
+      }
+      else
+      {
+        // Don't prune
+        firstIsPruned = false;
+      }
+      // Prune position1
+      // Position 2
+      qi2 = matrixProd(node.qi, bi2);
+      position2.x = qi2[3];
+      position2.y = qi2[7];
+      position2.z = qi2[11];
+      if (pruningTest(node.id, maps, sol, position2))
+      {
+        // Prune this branch
+        nChildren--;
+      }
+      // Get numChildren
+      numChildren = nChildren;
+      first = true;
     }
-    // Prune position1
-    // Position 2
-    qi2 = matrixProd(node.qi, bi2);
-    position2.x = qi2[3];
-    position2.y = qi2[7];
-    position2.z = qi2[11];
-    if (pruningTest(node.id, maps, sol, position2))
-    {
-      // Prune this branch
-      nChildren--;
-    }
-    // Get numChildren
-    numChildren = nChildren;
-    first = true;
   }
 
   // Return the next DMDGPNode to look into
@@ -175,7 +182,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
   // {
   //   root.qi[i] = 0.0;
   // }
-  DMDGPMaps searchS = {distanceMap, thetaMap, omegaMap};
+  DMDGPMaps searchS = {distanceMap, thetaMap, omegaMap, n_vertices};
   if (skeletonType == "seq")
   {
     YewPar::Skeletons::API::Params<> searchParameters;
