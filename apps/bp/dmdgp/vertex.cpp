@@ -5,9 +5,9 @@ double calculateCosTheta(const std::map<std::pair<int, int>, double> &distanceMa
 {
 
     // Check if the lb values exist in the map
-    auto it1 = distanceMap.find({im2, im1});
-    auto it2 = distanceMap.find({im1, i});
-    auto it3 = distanceMap.find({im2, i});
+    auto it1 = distanceMap.find({std::min(im2, im1), std::max(im2, im1)});
+    auto it2 = distanceMap.find({std::min(im1, i), std::max(im1, i)});
+    auto it3 = distanceMap.find({std::min(im2, i), std::max(im2, i)});
 
     if (it1 == distanceMap.end() || it2 == distanceMap.end() || it3 == distanceMap.end())
     {

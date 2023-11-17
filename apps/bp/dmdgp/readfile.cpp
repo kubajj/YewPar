@@ -95,7 +95,7 @@ std::map<std::pair<int, int>, double> createDataRecordMap(std::vector<DataRecord
     for (auto &record : records)
     {
         // Create a key as a pair of Id1 and Id2
-        std::pair<int, int> key(record.Id1, record.Id2);
+        std::pair<int, int> key(std::min(record.Id1, record.Id2), std::max(record.Id1, record.Id2));
 
         // Associate the key with a lower bound distance
         distanceMap[key] = record.lb;
