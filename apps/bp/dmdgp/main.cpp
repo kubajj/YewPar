@@ -112,6 +112,7 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
       // Get numChildren
       numChildren = nChildren;
       first = true;
+      id = node.id;
     }
   }
 
@@ -175,7 +176,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
   std::array<double, 12> q3;
   DMDGPSol sol = placeFirstThreeVertices(distanceMap, thetaMap, q3);
   DMDGPNode root;
-  root.id = 3;
+  root.id = 4;
   root.sol = sol;
   root.qi = q3;
   // for (int i = 0; i < 12; i++)
@@ -214,9 +215,8 @@ int main(int argc, char *argv[])
   desc_commandline.add_options()
       ( "skeleton",
         hpx::program_options::value<std::string>()->default_value("seq"),
-        //"Which skeleton to use: seq, depthbound, stacksteal, or budget"
         "Which skeleton to use: only seq possible for now"
-      )
+        )
       ( "mdfile",
         hpx::program_options::value<std::string>()->required(),
         "Where to find the MDFile which contains specification of the instance and necessary fields"
