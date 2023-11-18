@@ -27,7 +27,7 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
   vertex2.y = 0.0;
   vertex2.z = 0.0;
   sol.vertices.push_back(vertex2);
-  std::array<double, 12> b2 = {-1, 0, 0, -d12, 0, 1, -1, 0, 0, 0, 1, 0};
+  std::array<double, 12> b2 = {-1, 0, 0, -d12, 0, 1, 0, 0, 0, 0, -1, 0};
   std::array<double, 12> q2 = matrixProd(b1, b2);
 
   // Third Vertex
@@ -76,7 +76,7 @@ void calculateBis(int i, std::array<double, 12> &bi1, std::array<double, 12> &bi
   bi2 = {
     -cosTheta, -sinTheta, 0, -d*cosTheta,
     sinTheta*cosOmega, -cosTheta*cosOmega, sinOmega, d*sinTheta*cosOmega,
-    -sinTheta*sinOmega, cosTheta*sinOmega, -cosOmega, d*sinTheta*sinOmega
+    -sinTheta*sinOmega, cosTheta*sinOmega, cosOmega, -d*sinTheta*sinOmega
   };
   // clang-format on
 }
