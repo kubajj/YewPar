@@ -53,7 +53,7 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
   return sol;
 }
 
-void calculateBis(int i, std::array<double, 12> bi1, std::array<double, 12> bi2, const DMDGPMaps maps)
+void calculateBis(int i, std::array<double, 12> &bi1, std::array<double, 12> &bi2, const DMDGPMaps maps)
 {
   int im1 = i - 1;
   int im2 = i - 2;

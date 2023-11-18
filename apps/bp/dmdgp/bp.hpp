@@ -84,7 +84,7 @@ DMDGPSol placeFirstThreeVertices(
     const std::map<std::pair<int, int>, double> &distanceMap,
     const std::map<std::pair<int, int>, double> &cosThetaMap,
     std::array<double, 12> &q3);
-void calculateBis(int i, std::array<double, 12> bi1, std::array<double, 12> bi2, const DMDGPMaps maps);
+void calculateBis(int i, std::array<double, 12> &bi1, std::array<double, 12> &bi2, const DMDGPMaps maps);
 
 // pruningtest.cpp
 bool pruningTest(int vertexId, const DMDGPMaps &maps, DMDGPSol &sol, DMDGPVertexPosition currentPosition);
