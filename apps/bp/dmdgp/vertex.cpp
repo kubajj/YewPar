@@ -34,13 +34,29 @@ double calculateCosTheta(const std::map<std::pair<int, int>, double> &distanceMa
 double calculateCosOmega(const std::map<std::pair<int, int>, double> &distanceMap, int i, int im1, int im2, int im3)
 {
     double a, b, c, e, f, cosOmega;
+    auto it1 = distanceMap.find({im3, im2});
+    auto it2 = distanceMap.find({im3, im1});
+    auto it3 = distanceMap.find({im3, i});
+    auto it4 = distanceMap.find({im2, im1});
+    auto it5 = distanceMap.find({im2, i});
+    auto it6 = distanceMap.find({im1, i});
 
-    a = calculateCosTheta(distanceMap, i, im2, im3);
-    b = calculateCosTheta(distanceMap, im1, im2, i);
-    c = calculateCosTheta(distanceMap, im1, im2, im3);
-    //  a = (d_im3_im2 * d_im3_im2 + d_im2_i * d_im2_i - d_im3_i * d_im3_i) / (2.0 * d_im3_im2 * d_im2_i);
-    //  b = (d_im2_i * d_im2_i + d_im2_im1 * d_im2_im1 - d_im1_i * d_im1_i) / (2.0 * d_im2_i * d_im2_im1);
-    //  c = (d_im3_im2 * d_im3_im2 + d_im2_im1 * d_im2_im1 - d_im3_im1 * d_im3_im1) / (2.0 * d_im3_im2 * d_im2_im1);
+    if (it1 == distanceMap.end() || it2 == distanceMap.end() || it3 == distanceMap.end() || it4 == distanceMap.end() || it5 == distanceMap.end() || it6 == distanceMap.end())
+    {
+        throw std::runtime_error("Lower bounds not found for the quadruplet.");
+    }
+    double d_im3_im2 = it1->second;
+    double d_im3_im1 = it2->second;
+    double d_im3_i = it3->second;
+    double d_im2_im1 = it4->second;
+    double d_im2_i = it5->second;
+    double d_im1_i = it6->second;
+    // a = calculateCosTheta(distanceMap, i, im2, im3); // Angle gamma
+    // b can't be calculated as a cos theta
+    // c = calculateCosTheta(distanceMap, im1, im2, im3);
+    a = (d_im3_im2 * d_im3_im2 + d_im2_i * d_im2_i - d_im3_i * d_im3_i) / (2.0 * d_im3_im2 * d_im2_i);
+    b = (d_im2_i * d_im2_i + d_im2_im1 * d_im2_im1 - d_im1_i * d_im1_i) / (2.0 * d_im2_i * d_im2_im1);
+    c = (d_im3_im2 * d_im3_im2 + d_im2_im1 * d_im2_im1 - d_im3_im1 * d_im3_im1) / (2.0 * d_im3_im2 * d_im2_im1);
     e = 1.0 - b * b;
     f = 1.0 - c * c;
     if (e < 0.0 || f < 0.0)
