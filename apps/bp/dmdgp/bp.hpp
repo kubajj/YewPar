@@ -62,8 +62,8 @@ struct DMDGPSol
 struct DMDGPMaps
 {
    std::map<std::pair<int, int>, double> distanceMap;
-   std::map<std::pair<int, int>, double> thetaMap;
-   std::map<std::pair<int, int>, double> omegaMap;
+   std::map<std::pair<int, int>, double> cosThetaMap;
+   std::map<std::pair<int, int>, double> cosOmegaMap;
    int number_of_vertices;
 };
 
@@ -75,14 +75,14 @@ std::map<std::pair<int, int>, double> createDataRecordMap(std::vector<DataRecord
 // vertex.cpp
 void calculateAnglesForVertices(
     const std::map<std::pair<int, int>, double> &distanceMap, int n,
-    std::map<std::pair<int, int>, double> &thetaMap,
-    std::map<std::pair<int, int>, double> &omegaMap);
+    std::map<std::pair<int, int>, double> &cosThetaMap,
+    std::map<std::pair<int, int>, double> &cosOmegaMap);
 double calculateDistance(DMDGPVertexPosition v1, DMDGPVertexPosition v2);
 
 // bp.cpp
 DMDGPSol placeFirstThreeVertices(
     const std::map<std::pair<int, int>, double> &distanceMap,
-    const std::map<std::pair<int, int>, double> &thetaMap,
+    const std::map<std::pair<int, int>, double> &cosThetaMap,
     std::array<double, 12> &q3);
 void calculateBis(int i, std::array<double, 12> bi1, std::array<double, 12> bi2, const DMDGPMaps maps);
 

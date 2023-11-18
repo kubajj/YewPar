@@ -74,15 +74,15 @@ double calculateCosOmega(const std::map<std::pair<int, int>, double> &distanceMa
 // Function to calculate and return a map of angles for vertices i from 3 to n
 void calculateAnglesForVertices(
     const std::map<std::pair<int, int>, double> &distanceMap, int n,
-    std::map<std::pair<int, int>, double> &thetaMap,
-    std::map<std::pair<int, int>, double> &omegaMap)
+    std::map<std::pair<int, int>, double> &cosThetaMap,
+    std::map<std::pair<int, int>, double> &cosOmegaMap)
 {
 
     try
     {
-        double angle = std::acos(calculateCosTheta(distanceMap, 3, 2, 1));
+        double angle = calculateCosTheta(distanceMap, 3, 2, 1);
         // Store the angle in the angleMap with the key (im2, i)
-        thetaMap[{1, 3}] = angle;
+        cosThetaMap[{1, 3}] = angle;
     }
     catch (const std::runtime_error &e)
     {
@@ -97,11 +97,11 @@ void calculateAnglesForVertices(
 
         try
         {
-            double theta = std::acos(calculateCosTheta(distanceMap, i, im1, im2));
+            double theta = calculateCosTheta(distanceMap, i, im1, im2);
             // Store the angle in the angleMap with the key (im2, i)
-            thetaMap[{im2, i}] = theta;
-            double omega = std::acos(calculateCosOmega(distanceMap, i, im1, im2, im3));
-            omegaMap[{im3, i}] = omega;
+            cosThetaMap[{im2, i}] = theta;
+            double omega = calculateCosOmega(distanceMap, i, im1, im2, im3);
+            cosOmegaMap[{im3, i}] = omega;
         }
         catch (const std::runtime_error &e)
         {

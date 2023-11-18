@@ -1,6 +1,6 @@
 #include "bp.hpp"
 
-DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &distanceMap, const std::map<std::pair<int, int>, double> &thetaMap, std::array<double, 12> &q3)
+DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &distanceMap, const std::map<std::pair<int, int>, double> &cosThetaMap, std::array<double, 12> &q3)
 {
   DMDGPSol sol;
 
@@ -33,14 +33,13 @@ DMDGPSol placeFirstThreeVertices(const std::map<std::pair<int, int>, double> &di
   // Third Vertex
   DMDGPVertexPosition vertex3;
   auto iref23 = distanceMap.find({2, 3});
-  auto itheta13 = thetaMap.find({1, 3});
+  auto itheta13 = cosThetaMap.find({1, 3});
   double d23, theta13;
   // Cosine and sine of theta13
   double ct13, st13;
   d23 = iref23->second;
-  theta13 = itheta13->second;
-  ct13 = std::cos(theta13);
-  st13 = std::sin(theta13);
+  ct13 = itheta13->second;
+  st13 = sqrt(1.0 - ct13 * ct13);
   vertex3.x = -d12 + d23 * ct13;
   vertex3.y = d23 * st13;
   vertex3.z = 0.0;
@@ -60,16 +59,14 @@ void calculateBis(int i, std::array<double, 12> bi1, std::array<double, 12> bi2,
   int im2 = i - 2;
   int im3 = i - 3;
   auto idistance = maps.distanceMap.find({im1, i});
-  auto itheta = maps.thetaMap.find({im2, i});
-  auto iomega = maps.omegaMap.find({im3, i});
-  double d, theta, omega, cosTheta, sinTheta, cosOmega, sinOmega;
+  auto itheta = maps.cosThetaMap.find({im2, i});
+  auto iomega = maps.cosOmegaMap.find({im3, i});
+  double d, cosTheta, sinTheta, cosOmega, sinOmega;
   d = idistance->second;
-  theta = itheta->second;
-  omega = iomega->second;
-  cosTheta = std::cos(theta);
-  sinTheta = std::sin(theta);
-  cosOmega = std::cos(omega);
-  sinOmega = std::sin(omega);
+  cosTheta = itheta->second;
+  cosOmega = iomega->second;
+  sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+  sinOmega = sqrt(1.0 - cosOmega * cosOmega);
   // clang-format off
   bi1 = {
     -cosTheta, -sinTheta, 0, -d*cosTheta,

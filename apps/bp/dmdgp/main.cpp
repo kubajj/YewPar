@@ -158,13 +158,13 @@ int hpx_main(hpx::program_options::variables_map &opts)
   std::map<std::pair<int, int>, double> distanceMap = createDataRecordMap(instance);
 
   // Create empty maps for theta and omega
-  std::map<std::pair<int, int>, double> thetaMap;
-  std::map<std::pair<int, int>, double> omegaMap;
+  std::map<std::pair<int, int>, double> cosThetaMap;
+  std::map<std::pair<int, int>, double> cosOmegaMap;
 
   // Calculate the angles θ and ω among consecutive triplets/quadruples of vertices
-  calculateAnglesForVertices(distanceMap, n_vertices, thetaMap, omegaMap);
+  calculateAnglesForVertices(distanceMap, n_vertices, cosThetaMap, cosOmegaMap);
 
-  hpx::cout << "n: " << n_vertices << " len(thetaMap): " << thetaMap.size() << " len(omegaMap): " << omegaMap.size() << std::endl;
+  hpx::cout << "n: " << n_vertices << " len(cosThetaMap): " << cosThetaMap.size() << " len(cosOmegaMap): " << cosOmegaMap.size() << std::endl;
 
   auto start_time = std::chrono::steady_clock::now();
 
@@ -174,7 +174,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
     Main body
   */
   std::array<double, 12> q3;
-  DMDGPSol sol = placeFirstThreeVertices(distanceMap, thetaMap, q3);
+  DMDGPSol sol = placeFirstThreeVertices(distanceMap, cosThetaMap, q3);
   DMDGPNode root;
   root.id = 4;
   root.sol = sol;
@@ -183,7 +183,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
   // {
   //   root.qi[i] = 0.0;
   // }
-  DMDGPMaps searchS = {distanceMap, thetaMap, omegaMap, n_vertices};
+  DMDGPMaps searchS = {distanceMap, cosThetaMap, cosOmegaMap, n_vertices};
   if (skeletonType == "seq")
   {
     YewPar::Skeletons::API::Params<> searchParameters;
