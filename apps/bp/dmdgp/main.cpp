@@ -67,13 +67,15 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
   bool firstIsPruned;
   bool first;
   int id;
+  int n_vertices;
 
   // constructor
   GenNode(const DMDGPMaps &maps, const DMDGPNode &node)
   {
     // Body
     // Calculate Qi' - qi1 and Qi'' - qi2
-    if (node.id == node.n_vertices)
+    n_vertices = node.n_vertices;
+    if (node.id == n_vertices)
     {
       numChildren = 0;
     }
@@ -124,6 +126,7 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
     DMDGPNode nextNode;
     nextNode.sol = sol;
     nextNode.id = id + 1;
+    nextNode.n_vertices = n_vertices;
     if (!firstIsPruned && first)
     {
       nextNode.qi = qi1;
