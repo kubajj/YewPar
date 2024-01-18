@@ -64,7 +64,6 @@ struct DMDGPMaps
    std::map<std::pair<int, int>, double> distanceMap;
    std::map<std::pair<int, int>, double> cosThetaMap;
    std::map<std::pair<int, int>, double> cosOmegaMap;
-   int number_of_vertices;
 };
 
 // readfile.cpp

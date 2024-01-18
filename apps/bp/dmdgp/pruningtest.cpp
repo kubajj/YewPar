@@ -2,7 +2,7 @@
 
 bool pruningTest(int vertexId, const DMDGPMaps &maps, DMDGPSol &sol, DMDGPVertexPosition currentPosition)
 {
-    int j = vertexId - 1;
+    int j = vertexId;
     bool prune = false;
     double eps, dist, diff;
     // Epsilon for precision

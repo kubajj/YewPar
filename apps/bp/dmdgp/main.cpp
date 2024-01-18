@@ -20,6 +20,7 @@ struct DMDGPNode
 {
   friend class boost::serialization::access;
   int id;
+  int n_vertices;
   std::array<double, 12> qi;
   DMDGPSol sol;
 
@@ -42,9 +43,10 @@ struct CountSols : YewPar::Enumerator<DMDGPNode, std::uint64_t>
   std::uint64_t count;
   CountSols() : count(0){};
 
-  void accumulate(const DMDGPNode &n) override
+  void accumulate(const DMDGPNode &node) override
   {
-    count++;
+    if (node.id == node.n_vertices)
+      count++;
   }
 
   void combine(const std::uint64_t &other) override
@@ -71,7 +73,7 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
   {
     // Body
     // Calculate Qi' - qi1 and Qi'' - qi2
-    if (node.id == maps.number_of_vertices)
+    if (node.id == node.n_vertices)
     {
       numChildren = 0;
     }
@@ -126,6 +128,7 @@ struct GenNode : YewPar::NodeGenerator<DMDGPNode, DMDGPMaps>
     {
       nextNode.qi = qi1;
       nextNode.sol.vertices.push_back(position1);
+      first = false;
     }
     else
     {
@@ -179,18 +182,20 @@ int hpx_main(hpx::program_options::variables_map &opts)
   root.id = 4;
   root.sol = sol;
   root.qi = q3;
+  root.n_vertices = n_vertices;
   // for (int i = 0; i < 12; i++)
   // {
   //   root.qi[i] = 0.0;
   // }
-  DMDGPMaps searchS = {distanceMap, cosThetaMap, cosOmegaMap, n_vertices};
+  DMDGPMaps searchS = {distanceMap, cosThetaMap, cosOmegaMap};
+  std::uint64_t count;
   if (skeletonType == "seq")
   {
     YewPar::Skeletons::API::Params<> searchParameters;
-    auto count = YewPar::Skeletons::Seq<GenNode,
-                                        YewPar::Skeletons::API::Enumeration,
-                                        YewPar::Skeletons::API::Enumerator<CountSols>,
-                                        YewPar::Skeletons::API::DepthLimited>::search(searchS, root, searchParameters);
+    count = YewPar::Skeletons::Seq<GenNode,
+                                   YewPar::Skeletons::API::Enumeration,
+                                   YewPar::Skeletons::API::Enumerator<CountSols>,
+                                   YewPar::Skeletons::API::DepthLimited>::search(searchS, root, searchParameters);
   }
   else
   {
@@ -201,6 +206,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   auto overall_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
 
+  hpx::cout << "Number of solutions found: " << count << std::endl;
   hpx::cout << "cpu = " << overall_time.count() << std::endl;
 
   return hpx::finalize();
