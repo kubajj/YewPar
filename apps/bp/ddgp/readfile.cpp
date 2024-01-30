@@ -88,9 +88,9 @@ std::vector<DataRecord> readDataFile(const std::string &filename, int &maxId)
     return records;
 }
 
-std::map<std::pair<int, int>, std::pair<double, double>> createDataRecordMap(std::vector<DataRecord> &records)
+DistanceMap createDataRecordMap(std::vector<DataRecord> &records, VertexReferences &refs)
 {
-    std::map<std::pair<int, int>, std::pair<double, double>> distanceMap;
+    DistanceMap distanceMap;
 
     for (auto &record : records)
     {
@@ -99,7 +99,7 @@ std::map<std::pair<int, int>, std::pair<double, double>> createDataRecordMap(std
 
         // Associate the key with a lower bound distance
         std::pair<double, double> bounds(record.lb, record.ub);
-        distanceMap[key] = bounds;
+        distanceMap.boundsMap[key] = bounds;
     }
 
     return distanceMap;

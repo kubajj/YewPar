@@ -81,17 +81,22 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
     // hpx::program_options::notify(opts);
 
+    std::cout << "YewPar DDGP solver" << std::endl;
+
     auto inputFile = opts["mdfile"].as<std::string>();
 
     int n_vertices;
 
     ParsedData data = parseFile(inputFile);
 
+    std::cout << "MDFile read, instance name " << data.file << std::endl;
+
     // Note(kubajj): n_vertices is 1..n (not 0 based)
     std::vector<DataRecord> instance = readDataFile(data.file, n_vertices);
-    std::map<std::pair<int, int>, std::pair<double, double>> distanceMap = createDataRecordMap(instance);
+    VertexReferences refs;
+    DistanceMap distanceMap = createDataRecordMap(instance, refs);
 
-    hpx::cout << "n: " << n_vertices << std::endl;
+    hpx::cout << "Number of vertices in the file: " << n_vertices << std::endl;
 
     auto start_time = std::chrono::steady_clock::now();
 

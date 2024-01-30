@@ -59,9 +59,61 @@ struct DDGPSol
     std::vector<DDGPVertexPosition> vertices;
 };
 
+struct DistanceMap
+{
+    std::map<std::pair<int, int>, std::pair<double, double>> boundsMap;
+
+    double lowerBound(int key1, int key2) const
+    {
+        std::pair<int, int> keys(key1, key2);
+        auto it = boundsMap.find(keys);
+
+        if (it != boundsMap.end())
+        {
+            return it->second.first;
+        }
+        else
+        {
+            std::cerr << "Keys not found in the map." << std::endl;
+            return NULL;
+        }
+    }
+
+    double upperBound(int key1, int key2) const
+    {
+        std::pair<int, int> keys(key1, key2);
+        auto it = boundsMap.find(keys);
+
+        if (it != boundsMap.end())
+        {
+            return it->second.second;
+        }
+        else
+        {
+            std::cerr << "Keys not found in the map." << std::endl;
+            return NULL;
+        }
+    }
+};
+
+struct VertexReferences
+{
+    std::map<int, std::vector<int>> references;
+
+    std::vector<int> &getRefs(int key)
+    {
+        return references[key];
+    }
+
+    void insert(int key, int value)
+    {
+        references[key].push_back(value);
+    }
+};
+
 struct DDGPMaps
 {
-    std::map<std::pair<int, int>, double> distanceMap;
+    DistanceMap distanceMap;
     std::map<std::pair<int, int>, double> cosThetaMap;
     std::map<std::pair<int, int>, double> cosOmegaMap;
 };
@@ -69,4 +121,4 @@ struct DDGPMaps
 // readfile.cpp
 ParsedData parseFile(const std::string &filename);
 std::vector<DataRecord> readDataFile(const std::string &filename, int &maxId);
-std::map<std::pair<int, int>, std::pair<double, double>> createDataRecordMap(std::vector<DataRecord> &records);
+DistanceMap createDataRecordMap(std::vector<DataRecord> &records, VertexReferences &refs);
