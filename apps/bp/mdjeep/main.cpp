@@ -16,8 +16,28 @@
 
 #include "bp.hpp"
 
+double INFTY = 1.e+30;
+
 int hpx_main(hpx::program_options::variables_map &opts)
 {
+    int i, n, n0, m, mexact;
+    int fidx, verr;
+    int it, flag;
+    size_t nlines, linelen, wordlen;
+    bool clique, smallsine;
+    bool check_consec;
+    double **X;
+    double obj, cosine;
+    char *errmsg;
+    char *line;
+    char *timestring;
+    VERTEX *v;
+    SEARCH S;
+    OPTION op;
+    INFORMATION info;
+    unsigned long typelist;
+    struct timeval t1, t2;
+    FILE *input;
 
     // hpx::program_options::notify(opts);
 
