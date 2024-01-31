@@ -11,7 +11,7 @@
               May 19 2020  v.0.3.2  no changes
 **************************************************************************************************/
 
-#include "bp.hpp"
+#include "bp.h"
 
 // this function allocates memory for a vector (1-dim array of double)
 double *allocateVector(size_t n)
