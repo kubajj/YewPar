@@ -424,17 +424,80 @@ int hpx_main(hpx::program_options::variables_map &opts)
       expandBounds(i, v, S.lX, S.uX, op.be, op.eps);
     };
   };
-
   /*
     Main body
   */
 
   auto start_time = std::chrono::steady_clock::now();
 
+  // calling method bp
+  if (info.method == 0)
+  {
+    fprintf(stderr, "mdjeep: bp is exploring the search tree ... ");
+    if (op.monitor)
+    {
+      fprintf(stderr, "layer ");
+      for (i = 0; i < info.ndigits; i++)
+        fprintf(stderr, " ");
+    };
+    gettimeofday(&t1, 0);
+    if (info.exact)
+      bp_exact(0, n, v, X, S, op, &info);
+    else
+      bp(0, n, v, X, S, op, &info);
+    gettimeofday(&t2, 0);
+    fprintf(stderr, "\n");
+  };
+
+  // printing the result found by bp
+  if (info.method == 0)
+  {
+    if (t2.tv_sec - t1.tv_sec > op.maxtime)
+      fprintf(stderr, "mdjeep: bp stopped because the maxtime was reached\n");
+    fprintf(stderr, "mdjeep: %d solutions found by bp method", info.nsols);
+    if (info.nsols == info.maxsols)
+      fprintf(stderr, " (max %d)", info.maxsols);
+    fprintf(stderr, "\n");
+    fprintf(stderr, "mdjeep: %d branches were pruned\n", info.pruning);
+    if (!info.exact)
+      fprintf(stderr, "mdjeep: %d calls to spectral projected gradient (%d successful)\n", info.nspg, info.nspgok);
+    if (info.nsols > 0)
+      fprintf(stderr, "mdjeep: best solution #%d: LDE = %10.8lf, MDE = %10.8lf\n", info.best_sol, info.best_lde, info.best_mde);
+  };
+
   auto overall_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
 
   hpx::cout << "cpu = " << overall_time.count() << std::endl;
-
+  // freeing memory
+  free(timestring);
+  freeVector(S.memory);
+  freeVector(S.Dy);
+  freeVector(S.Yy);
+  freeVector(S.Zy);
+  freeMatrix(3, S.DX);
+  freeMatrix(3, S.YX);
+  freeMatrix(3, S.ZX);
+  freeMatrix(3, S.Xp);
+  freeMatrix(3, S.gXp);
+  freeMatrix(3, S.gX);
+  freeMatrix(3, S.sX);
+  freeVector(S.yp);
+  freeVector(S.gyp);
+  freeVector(S.y);
+  freeVector(S.gy);
+  freeVector(S.sy);
+  freeMatrix(3, S.pX);
+  freeMatrix(3, S.lX);
+  freeMatrix(3, S.uX);
+  free(S.sym);
+  freeMatrix(3, X);
+  free(info.name);
+  free(info.filename);
+  if (info.method == 0)
+    free(S.refs);
+  if (op.print != 0)
+    free(info.output);
+  freeVertex(n, v);
   return hpx::finalize();
 }
 
