@@ -43,10 +43,11 @@ int hpx_main(hpx::program_options::variables_map &opts)
 
   auto inputFile = opts["mdfile"].as<std::string>();
   const char *inputFile_c = inputFile.c_str();
+  input = NULL;
   input = fopen(inputFile_c, "r");
   if (input == NULL)
   {
-    fprintf(stderr, "mdjeep: error while opening MDfile '%s';", inputFile_c);
+    std::cerr << "mdjeep: error while opening MDfile '" << inputFile_c << "'" << std::endl;
     return hpx::finalize();
   };
 
@@ -56,12 +57,11 @@ int hpx_main(hpx::program_options::variables_map &opts)
   // any error occurred while reading MDfile?
   if (errmsg != NULL)
   {
-    fprintf(stderr, "%s\n", errmsg);
+    std::cerr << errmsg << std::endl;
     free(errmsg);
     return hpx::finalize();
   };
   fclose(input);
-  input = NULL;
   auto start_time = std::chrono::steady_clock::now();
 
   /*
