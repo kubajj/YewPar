@@ -47,7 +47,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
   input = fopen(inputFile_c, "r");
   if (input == NULL)
   {
-    std::cerr << "mdjeep: error while opening MDfile '" << inputFile_c << "'" << std::endl;
+    fprintf(stderr, "mdjeep: error while opening MDfile '%s'\n", inputFile_c);
     return hpx::finalize();
   };
 
@@ -57,7 +57,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
   // any error occurred while reading MDfile?
   if (errmsg != NULL)
   {
-    std::cerr << errmsg << std::endl;
+    fprintf(stderr, "%s\n", errmsg);
     free(errmsg);
     return hpx::finalize();
   };
