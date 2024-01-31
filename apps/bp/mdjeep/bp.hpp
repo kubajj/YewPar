@@ -11,11 +11,25 @@
               May 19 2020  v.0.3.2  reorganization of OPTION structure, new function prototypes
               Apr 13 2022  v.0.3.2  patch
 ********************************************************************************************************/
+#ifndef _BP_
+#define _BP_
+#include <iostream>
+#include <numeric>
+#include <algorithm>
+#include <vector>
+#include <array>
+#include <map>
+#include <chrono>
+#include <memory>
+#include <typeinfo>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <cmath>
+#endif
+
 extern "C"
 {
-#include <iostream>
-#include <string>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
