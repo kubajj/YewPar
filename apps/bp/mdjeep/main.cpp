@@ -42,10 +42,11 @@ int hpx_main(hpx::program_options::variables_map &opts)
   std::cout << "YewPar DDGP solver based on MDjeep" << std::endl;
 
   auto inputFile = opts["mdfile"].as<std::string>();
-  input = fopen(inputFile, "r");
+  const char *inputFile_c = inputFile.c_str();
+  input = fopen(inputFile_c, "r");
   if (input == NULL)
   {
-    fprintf(stderr, "mdjeep: error while opening MDfile '%s';", inputFile);
+    fprintf(stderr, "mdjeep: error while opening MDfile '%s';", inputFile_c);
     return hpx::finalize();
   };
 
