@@ -13,6 +13,8 @@
 ********************************************************************************************************/
 extern "C"
 {
+#include <iostream>
+#include <string>
 
 #include <stdio.h>
 #include <stdlib.h>
