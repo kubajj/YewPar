@@ -16,8 +16,6 @@
 
 #include "bp.hpp"
 
-double INFTY = 1.e+30;
-
 int hpx_main(hpx::program_options::variables_map &opts)
 {
   int n;

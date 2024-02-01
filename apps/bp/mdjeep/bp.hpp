@@ -36,6 +36,8 @@
 #include <sys/time.h>
 #endif
 
+double INFTY = 1.e+30;
+
 extern "C"
 {
 #include "bp.h"
