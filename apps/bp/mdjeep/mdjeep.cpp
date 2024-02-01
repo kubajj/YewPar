@@ -49,7 +49,8 @@ Config mdjeep_main(std::string inputFile)
     if (input == NULL)
     {
         fprintf(stderr, "mdjeep: error while opening MDfile '%s'\n", inputFile_c);
-        return hpx::finalize();
+        config.error = true;
+        return config;
     };
 
     // reading the MDfile and setting up the main options and infos
@@ -60,7 +61,8 @@ Config mdjeep_main(std::string inputFile)
     {
         fprintf(stderr, "%s\n", errmsg);
         free(errmsg);
-        return hpx::finalize();
+        config.error = true;
+        return config;
     };
     fclose(input);
 
@@ -131,7 +133,8 @@ Config mdjeep_main(std::string inputFile)
     if (input == NULL)
     {
         fprintf(stderr, "mdjeep: cannot open instance file '%s'\n", info.filename);
-        return hpx::finalize();
+        config.error = true;
+        return config;
     };
 
     // verifying the length of words and lines in the text file (for proper memory allocations)
@@ -139,7 +142,8 @@ Config mdjeep_main(std::string inputFile)
     if (nlines == 0 || wordlen == 0 || linelen == 0)
     {
         fprintf(stderr, "mdjeep: error while reading instance file: the file seems to be empty\n");
-        return hpx::finalize();
+        config.error = true;
+        return config;
     };
 
     // memory allocation for the array of chars containing the text file lines
@@ -150,7 +154,8 @@ Config mdjeep_main(std::string inputFile)
     {
         fprintf(stderr, "mdjeep: error while reading instance file: different lines contain different lists of data types\n");
         free(line);
-        return hpx::finalize();
+        config.error = true;
+        return config;
     };
 
     // counting the number of vertices in the instance file
@@ -159,7 +164,8 @@ Config mdjeep_main(std::string inputFile)
     {
         fprintf(stderr, "mdjeep: error while reading instance file: it looks like the instance file does not respect the specified format\n");
         free(line);
-        return hpx::finalize();
+        config.error = true;
+        return config;
     };
 
     // memory allocation for the array of vertex structures
@@ -183,7 +189,8 @@ Config mdjeep_main(std::string inputFile)
         else
             fprintf(stderr, "vertex with rank %d was found for the second time but with a different set of attributes\n", n0 + verr);
         free(v);
-        return hpx::finalize();
+        config.error = true;
+        return config;
     };
 
     // counting the number of distances
@@ -192,7 +199,8 @@ Config mdjeep_main(std::string inputFile)
     {
         fprintf(stderr, "mdjeep: error: not enough distances to perform discretization necessary to execute bp method\n");
         free(v);
-        return hpx::finalize();
+        config.error = true;
+        return config;
     };
 
     // counting the number of exact distances
@@ -202,7 +210,8 @@ Config mdjeep_main(std::string inputFile)
         fprintf(stderr, "mdjeep: error: not enough exact distances to perform discretization necessary to execute bp method\n");
         fprintf(stderr, "               a distance [lb,ub] is considered as exact if ub-lb < tolerance eps\n");
         free(v);
-        return hpx::finalize();
+        config.error = true;
+        return config;
     };
 
     // printing instance details
@@ -233,7 +242,8 @@ Config mdjeep_main(std::string inputFile)
             {
                 fprintf(stderr, "mdjeep: error: no refinement method specified for bp (instance contains interval distances)\n");
                 free(v);
-                return hpx::finalize();
+                config.error = true;
+                return config;
             };
         };
     };
@@ -247,7 +257,8 @@ Config mdjeep_main(std::string inputFile)
             fprintf(stderr, "mdjeep: error: the first three vertices of the input instance do not form a clique\n");
             fprintf(stderr, "               the instance cannot be discretized\n");
             free(v);
-            return hpx::finalize();
+            config.error = true;
+            return config;
         };
     };
 
@@ -261,7 +272,8 @@ Config mdjeep_main(std::string inputFile)
             fprintf(stderr, "               not enough references for vertex %d (should have at least 3, at least 2 exact)\n", n0 + i);
             fprintf(stderr, "               stopping here... other necessary distances may be unavailable\n");
             free(v);
-            return hpx::finalize();
+            config.error = true;
+            return config;
         };
     };
 
@@ -309,14 +321,16 @@ Config mdjeep_main(std::string inputFile)
                     fprintf(stderr, "mdjeep: internal error: it was verified that the discretization assumptions were satisfied but they are actually not\n");
                     free(S.refs);
                     free(v);
-                    return hpx::finalize();
+                    config.error = true;
+                    return config;
                 };
                 if (cosine == 0.0)
                 {
                     fprintf(stderr, "mdjeep: error: one triplet of reference vertices forms a flat angle; no alternative triplet available\n");
                     free(S.refs);
                     free(v);
-                    return hpx::finalize();
+                    config.error = true;
+                    return config;
                 };
                 if (fabs(sqrt(1.0 - cosine * cosine)) < op.eps)
                     smallsine = true;
@@ -330,7 +344,8 @@ Config mdjeep_main(std::string inputFile)
                     fprintf(stderr, "mdjeep: internal error: it was verified that the discretization assumptions were satisfied but they are actually not\n");
                     free(S.refs);
                     free(v);
-                    return hpx::finalize();
+                    config.error = true;
+                    return config;
                 };
             };
         };
@@ -353,14 +368,16 @@ Config mdjeep_main(std::string inputFile)
             fprintf(stderr, "mdjeep: error while opening file containing starting point for spg\n");
             free(X);
             free(v);
-            return hpx::finalize();
+            config.error = true;
+            return config;
         };
         if (readStartingPoint(input, n, X) != n)
         {
             fprintf(stderr, "mdjeep: error while reading starting point for spg, it seems it doesnt contain the expected number of vertex positions\n");
             free(X);
             free(v);
-            return hpx::finalize();
+            config.error = true;
+            return config;
         };
     };
 

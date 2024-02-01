@@ -45,6 +45,8 @@ int hpx_main(hpx::program_options::variables_map &opts)
   auto inputFile = opts["mdfile"].as<std::string>();
 
   Config config = mdjeep_main(inputFile);
+  if (config.error)
+    return hpx::finalize();
   n = config.n;
   v = config.v;
   X = config.X;

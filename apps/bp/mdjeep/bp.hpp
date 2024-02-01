@@ -49,6 +49,7 @@ struct Config
   SEARCH S;
   OPTION op;
   INFORMATION *info;
+  bool error;
 
   Config createConfig(int n, VERTEX *v, double **X, SEARCH S, OPTION op, INFORMATION *info)
   {
@@ -61,6 +62,7 @@ struct Config
     config.S = S;
     config.op = op;
     config.info = info;
+    config.error = false;
 
     return config;
   }
