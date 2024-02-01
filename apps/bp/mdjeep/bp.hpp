@@ -34,8 +34,9 @@
 #include <ctype.h>
 #include <signal.h>
 #include <sys/time.h>
-double INFTY = 1.e+30;
 #endif
+
+extern double INFTY = 1.e+30;
 
 extern "C"
 {
