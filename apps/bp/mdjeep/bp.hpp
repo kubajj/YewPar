@@ -36,6 +36,11 @@
 #include <sys/time.h>
 #endif
 
+extern "C"
+{
+#include "bp.h"
+}
+
 struct Config
 {
   int n;
@@ -63,8 +68,3 @@ struct Config
 
 // mdjeep.cpp
 Config mdjeep_main(std::string inputFile);
-
-extern "C"
-{
-#include "bp.h"
-}
