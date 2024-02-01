@@ -36,6 +36,34 @@
 #include <sys/time.h>
 #endif
 
+struct Config
+{
+  int n;
+  VERTEX *v;
+  double **X;
+  SEARCH S;
+  OPTION op;
+  INFORMATION *info;
+
+  Config createConfig(int n, VERTEX *v, double **X, SEARCH S, OPTION op, INFORMATION *info)
+  {
+    Config config;
+
+    // Initialize the Config instance with the provided values
+    config.n = n;
+    config.v = v;
+    config.X = X;
+    config.S = S;
+    config.op = op;
+    config.info = info;
+
+    return config;
+  }
+};
+
+// mdjeep.cpp
+Config mdjeep_main(std::string inputFile);
+
 extern "C"
 {
 #include "bp.h"
