@@ -21,6 +21,8 @@
 
 #include "bp.hpp"
 
+double INFTY = 1.e+30;
+
 Config mdjeep_main(std::string inputFile)
 {
     Config config;

@@ -12,11 +12,6 @@
               Apr 13 2022  v.0.3.2  patch
 ********************************************************************************************************/
 
-#ifndef BP_H
-#define BP_H
-#define INFTY 1.e+30
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
