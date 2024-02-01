@@ -50,7 +50,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
   X = config.X;
   S = config.S;
   op = config.op;
-  info = config.info;
+  info = *(config.info);
 
   /*
     Main body
