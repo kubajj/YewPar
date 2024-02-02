@@ -1,6 +1,6 @@
 #include "bp.hpp"
 
-double **copyMatrix(double **matrix, int rows, int cols)
+double **copy(double **matrix, int rows, int cols)
 {
     double **copy = new double *[rows];
     for (int i = 0; i < rows; ++i)

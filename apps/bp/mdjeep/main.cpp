@@ -161,8 +161,8 @@ struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
       else
         current = lastOmegaInterval(omegaL);
 
-      X1 = copyMatrix(node.X);
-      X2 = copyMatrix(node.X);
+      X1 = copy(node.X);
+      X2 = copy(node.X);
 
       numChildren = 0;
       pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, r1, r3, X1, space.v, space.S, space.op, space.info);
