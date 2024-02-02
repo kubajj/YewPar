@@ -16,27 +16,208 @@
 
 #include "bp.hpp"
 
+struct SearchNode
+{
+  friend class boost::serialization::access;
+  int i;
+  int n_vertices;
+  double **X;
+
+  int getObj() const
+  {
+    return i;
+  }
+
+  template <class Archive>
+  void serialize(Archive &ar, const unsigned int version)
+  {
+    ar & i;
+    ar & n_vertices;
+    ar & X;
+  }
+};
+
+struct CountSols : YewPar::Enumerator<SearchNode, std::uint64_t>
+{
+  std::uint64_t count;
+  CountSols() : count(0){};
+
+  void accumulate(const SearchNode &node) override
+  {
+    if (node.i == node.n_vertices)
+      count++;
+  }
+
+  void combine(const std::uint64_t &other) override
+  {
+    count += other;
+  }
+
+  std::uint64_t get() override { return count; }
+};
+
+struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
+{
+  double **X1, **X2;
+  bool firstIsPruned;
+  bool first;
+  int i, n_vertices;
+
+  // constructor
+  GenNode(const SearchSpace &space, const SearchNode &node)
+  {
+    i = node.i;
+    n_vertices = node.n_vertices;
+    if (i == node.n_vertices)
+    {
+      numChildren = 0;
+    }
+    else
+    {
+      bool pruned;
+      int j, k;
+      int it, nb;
+      double U[9];
+      double cdist;
+      double cTheta, sTheta;
+      double cosOmega00, cosOmega01;
+      double sinOmega00, sinOmega01;
+      double lomega0, uomega0;
+      double lomega1, uomega1;
+      Omega *current;
+      omegaList omegaL;
+      REFERENCE *r1, *r2, *r3;
+      // i = node.id;
+      // updating BP call counter
+      space.info->ncalls++;
+      it = 0;
+
+      // reference vertices
+      r3 = space.S.refs[i].r3;
+      r2 = space.S.refs[i].r2;
+      r1 = space.S.refs[i].r1;
+      cdist = lowerBound(r1);
+
+      // theta angle ("bond" angles)
+      cTheta = costheta(otherVertexId(r2), otherVertexId(r1), i, space.v, node.X);
+      sTheta = sqrt(1.0 - cTheta * cTheta);
+
+      // generating U matrix (only once)
+      UMatrix(otherVertexId(r3), otherVertexId(r2), otherVertexId(r1), i, node.X, U);
+
+      // omega angle (torsion angles)
+      nb = 2;
+      cosOmega00 = cosomega(otherVertexId(r3), otherVertexId(r2), otherVertexId(r1), i, space.v, node.X, 0.0, space.op.eps);
+      cosOmega01 = cosomega(otherVertexId(r3), otherVertexId(r2), otherVertexId(r1), i, space.v, node.X, 1.0, space.op.eps);
+      if (cosOmega00 == -2.0 || cosOmega01 == -2.0)
+        return; // infeasibility already detected
+      sinOmega00 = sqrt(1.0 - cosOmega00 * cosOmega00);
+      sinOmega01 = sqrt(1.0 - cosOmega01 * cosOmega01);
+      lomega0 = atan2(+sinOmega00, cosOmega00);
+      uomega0 = atan2(+sinOmega01, cosOmega01);
+      lomega1 = atan2(-sinOmega00, cosOmega00);
+      uomega1 = atan2(-sinOmega01, cosOmega01);
+      // if the two omega intervals are adjacent, we can consider the union
+      if (i > 3)
+      {
+        if (fabs(uomega0 - lomega1) < space.op.eps)
+        {
+          nb = 1;
+          uomega0 = uomega1;
+        }
+        else if (fabs(uomega1 - lomega0) < space.op.eps)
+        {
+          nb = 1;
+          lomega0 = lomega1;
+        };
+      };
+      // if the layer is symmetric, it is not necessary to consider the entire omega intervals
+      if (space.S.sym[i])
+      {
+        lomega0 = 0.5 * (lomega0 + uomega0);
+        uomega0 = lomega0;
+        if (nb == 2)
+        {
+          lomega1 = 0.5 * (lomega1 + uomega1);
+          uomega1 = lomega1;
+        };
+      };
+
+      // initializing omega list
+      omegaL = initOmegaList(lomega0, uomega0);
+      if (nb == 2)
+        attachNewOmegaInterval(firstOmegaInterval(omegaL), lomega1, uomega1);
+
+      // verifying the "arclength" of every arc wrt the given resolution parameter
+      splitOmegaIntervals(firstOmegaInterval(omegaL), cdist, space.op.r);
+
+      // counting total number of omega intervals (necessary only at layer 3)
+      if (i == 3)
+        nb = numberOfOmegaIntervals(firstOmegaInterval(omegaL));
+
+      // starting point for iterating over omega angles (it depends on op.symmetry)
+      if (space.op.symmetry < 2)
+        current = firstOmegaInterval(omegaL);
+      else
+        current = lastOmegaInterval(omegaL);
+
+      X1 = copyMatrix(node.X);
+      X2 = copyMatrix(node.X);
+
+      numChildren = 0;
+      pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, r1, r3, X1, space.v, space.S, space.op, space.info);
+      if (!pruned)
+      {
+        // Assign X1
+        numChildren++;
+        firstIsPruned = false;
+      }
+      else
+      {
+        firstIsPruned = true;
+      }
+      if (omegaIntervalHasNextAlongDirection(current, space.op.symmetry < 2))
+      {
+        current = omegaIntervalNextAlongDirection(current, space.op.symmetry < 2);
+        pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, r1, r3, X2, space.v, space.S, space.op, space.info);
+
+        if (!pruned)
+        {
+          // Assign X2
+          numChildren++;
+        }
+      }
+      first = true;
+    }
+  }
+
+  // Return the next node to look into
+  SearchNode next() override
+  {
+    SearchNode nextNode;
+    nextNode.i = i + 1;
+    nextNode.n_vertices = n_vertices;
+    if (!firstIsPruned && first)
+    {
+      nextNode.X = X1;
+      first = false;
+    }
+    else
+    {
+      nextNode.X = X2;
+    }
+    return nextNode;
+  }
+};
+
 int hpx_main(hpx::program_options::variables_map &opts)
 {
-  int n;
+  int i, n;
   VERTEX *v;
   double **X;
   SEARCH S;
   OPTION op;
   INFORMATION info;
-
-  int i, n0, m, mexact;
-  int fidx, verr;
-  int it, flag;
-  size_t nlines, linelen, wordlen;
-  bool clique, smallsine;
-  bool check_consec;
-  double obj, cosine;
-  char *errmsg;
-  char *line;
-  unsigned long typelist;
-  struct timeval t1, t2;
-  FILE *input;
 
   std::cout << "YewPar DDGP solver based on MDjeep" << std::endl;
 
@@ -52,49 +233,46 @@ int hpx_main(hpx::program_options::variables_map &opts)
   op = config.op;
   info = *(config.info);
 
+  i = prepare_bp(v, X, S, op, &info);
+  // Ignoring bp_exact for now
+
   /*
     Main body
   */
 
+  SearchNode root;
+  root.i = i;
+  root.n_vertices = n;
+  root.X = X;
+  SearchSpace searchS = {false, v, S, op, &info};
+
+  fprintf(stderr, "mdjeep: bp is exploring the search tree ... ");
+  if (op.monitor)
+  {
+    fprintf(stderr, "layer ");
+    for (i = 0; i < info.ndigits; i++)
+      fprintf(stderr, " ");
+  };
   auto start_time = std::chrono::steady_clock::now();
-
-  // calling method bp
-  if (info.method == 0)
+  std::uint64_t count;
+  if (skeletonType == "seq")
   {
-    fprintf(stderr, "mdjeep: bp is exploring the search tree ... ");
-    if (op.monitor)
-    {
-      fprintf(stderr, "layer ");
-      for (i = 0; i < info.ndigits; i++)
-        fprintf(stderr, " ");
-    };
-    gettimeofday(&t1, 0);
-    if (info.exact)
-      bp_exact(0, n, v, X, S, op, &info);
-    else
-      bp(0, n, v, X, S, op, &info);
-    gettimeofday(&t2, 0);
-    fprintf(stderr, "\n");
-  };
-
-  // printing the result found by bp
-  if (info.method == 0)
+    YewPar::Skeletons::API::Params<> searchParameters;
+    count = YewPar::Skeletons::Seq<GenNode,
+                                   YewPar::Skeletons::API::Enumeration,
+                                   YewPar::Skeletons::API::Enumerator<CountSols>,
+                                   YewPar::Skeletons::API::DepthLimited>::search(searchS, root, searchParameters);
+  }
+  else
   {
-    if (t2.tv_sec - t1.tv_sec > op.maxtime)
-      fprintf(stderr, "mdjeep: bp stopped because the maxtime was reached\n");
-    fprintf(stderr, "mdjeep: %d solutions found by bp method", info.nsols);
-    if (info.nsols == info.maxsols)
-      fprintf(stderr, " (max %d)", info.maxsols);
-    fprintf(stderr, "\n");
-    fprintf(stderr, "mdjeep: %d branches were pruned\n", info.pruning);
-    if (!info.exact)
-      fprintf(stderr, "mdjeep: %d calls to spectral projected gradient (%d successful)\n", info.nspg, info.nspgok);
-    if (info.nsols > 0)
-      fprintf(stderr, "mdjeep: best solution #%d: LDE = %10.8lf, MDE = %10.8lf\n", info.best_sol, info.best_lde, info.best_mde);
-  };
+    hpx::cout << "Invalid skeleton type option. Only seq implemented so far." << std::endl;
+    hpx::finalize();
+    return EXIT_FAILURE;
+  }
 
   auto overall_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
 
+  fprintf(stderr, "\n");
   hpx::cout << "cpu = " << overall_time.count() << std::endl;
   // freeing memory
   freeVector(S.memory);

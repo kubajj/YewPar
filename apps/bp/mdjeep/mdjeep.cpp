@@ -447,3 +447,191 @@ Config mdjeep_main(std::string inputFile)
     config = config.createConfig(n, v, X, S, op, &info);
     return config;
 }
+
+int prepare_bp(VERTEX *v, double **X, SEARCH S, OPTION op, INFORMATION *info)
+{
+    int i = 0;
+    REFERENCE *r1, *r2;
+    double cTheta, sTheta;
+
+    // initializing the BP call counter
+    info->ncalls = 0;
+
+    // vertex 0
+    X[0][0] = 0.0;
+    X[1][0] = 0.0;
+    X[2][0] = 0.0;
+    createBox(0, X, op.eps, S.lX, S.uX);
+
+    // vertex 1
+    r1 = getReference(v, 0, 1);
+    X[0][1] = -lowerBound(r1);
+    X[1][1] = 0.0;
+    X[2][1] = 0.0;
+    createBox(1, X, op.eps, S.lX, S.uX);
+
+    // vertex 2
+    r2 = getReference(v, 1, 2);
+    cTheta = costheta(0, 1, 2, v, X);
+    sTheta = sqrt(1.0 - cTheta * cTheta);
+    X[0][2] = -lowerBound(r1) + lowerBound(r2) * cTheta;
+    X[1][2] = lowerBound(r2) * sTheta;
+    X[2][2] = 0.0;
+    createBox(2, X, op.eps, S.lX, S.uX);
+
+    // branching starts at vertex i+3
+    return i + 3;
+}
+
+bool prepare_branch(int i, Omega *current, int &it, int nb, double cdist, double cTheta, double sTheta, REFERENCE *r1, REFERENCE *r3, double **X, VERTEX *v, SEARCH S, OPTION op, INFORMATION *info)
+{
+    bool pruned = false;
+
+    int j, k;
+    int ldigits;
+    double A, B, U[9];
+    double lomega0, uomega0;
+    double lomega1, uomega1;
+    double omega;
+    double alpha, opt;
+    double obj;
+    double pperr, perr;
+    // monitor
+    if (op.monitor)
+    {
+        ldigits = numberOfDigits(i);
+        for (k = 0; k < info->ndigits; k++)
+            fprintf(stderr, "\b");
+        for (k = 0; k < info->ndigits - ldigits; k++)
+            fprintf(stderr, " ");
+        fprintf(stderr, "%d", i);
+    };
+    it++;
+
+    // the vertex position is initially placed at the center of the arc
+    lomega0 = omegaIntervalLowerBound(current);
+    uomega0 = omegaIntervalUpperBound(current);
+    omega = 0.5 * (lomega0 + uomega0);
+    genCoordinates(otherVertexId(r1), i, X, U, cdist, cTheta, sTheta, cos(omega), sin(omega));
+
+    // generation of the box inscribing the arc
+    if (isExactDistance(r3, op.eps))
+    {
+        // the box has the size equal to the tolerance over the three dimensions
+        createBox(i, X, op.eps, S.lX, S.uX);
+    }
+    else
+    {
+        // computing min and max x coordinates over the arc
+        A = U[3] * cdist * sTheta;
+        B = U[6] * cdist * sTheta;
+        if (A != 0.0)
+        {
+            lomega1 = A * cos(lomega0) + B * sin(lomega0);
+            uomega1 = A * cos(uomega0) + B * sin(uomega0);
+            alpha = atan2(B, A);
+            if (alpha < 0.0)
+                opt = alpha + S.pi;
+            else
+                opt = alpha - S.pi;
+            alpha = A * cos(alpha) + B * sin(alpha);
+            alpha = maximum(alpha, lomega1, uomega1);
+            opt = A * cos(opt) + B * sin(opt);
+            opt = minimum(opt, lomega1, uomega1);
+            S.lX[0][i] = S.lX[0][otherVertexId(r1)] - U[0] * cdist * cTheta + opt - op.eps;
+            S.uX[0][i] = S.uX[0][otherVertexId(r1)] - U[0] * cdist * cTheta + alpha + op.eps;
+        }
+        else
+        {
+            S.lX[0][i] = X[0][i] - op.eps;
+            S.uX[0][i] = X[0][i] + op.eps;
+        };
+
+        // computing min and max y coordinates over the arc
+        A = U[4] * cdist * sTheta;
+        B = U[7] * cdist * sTheta;
+        if (A != 0.0)
+        {
+            lomega1 = A * cos(lomega0) + B * sin(lomega0);
+            uomega1 = A * cos(uomega0) + B * sin(uomega0);
+            alpha = atan2(B, A);
+            if (alpha < 0.0)
+                opt = alpha + S.pi;
+            else
+                opt = alpha - S.pi;
+            alpha = A * cos(alpha) + B * sin(alpha);
+            alpha = maximum(alpha, lomega1, uomega1);
+            opt = A * cos(opt) + B * sin(opt);
+            opt = minimum(opt, lomega1, uomega1);
+            S.lX[1][i] = S.lX[1][otherVertexId(r1)] - U[1] * cdist * cTheta + opt - op.eps;
+            S.uX[1][i] = S.uX[1][otherVertexId(r1)] - U[1] * cdist * cTheta + alpha + op.eps;
+        }
+        else
+        {
+            S.lX[1][i] = X[1][i] - op.eps;
+            S.uX[1][i] = X[1][i] + op.eps;
+        };
+
+        // computing min and max z coordinates over the arc
+        A = U[5] * cdist * sTheta;
+        B = U[8] * cdist * sTheta;
+        if (A != 0.0)
+        {
+            lomega1 = A * cos(lomega0) + B * sin(lomega0);
+            uomega1 = A * cos(uomega0) + B * sin(uomega0);
+            alpha = atan2(B, A);
+            if (alpha < 0.0)
+                opt = alpha + S.pi;
+            else
+                opt = alpha - S.pi;
+            alpha = A * cos(alpha) + B * sin(alpha);
+            alpha = maximum(alpha, lomega1, uomega1);
+            opt = A * cos(opt) + B * sin(opt);
+            opt = minimum(opt, lomega1, uomega1);
+            S.lX[2][i] = S.lX[2][otherVertexId(r1)] - U[2] * cdist * cTheta + opt - op.eps;
+            S.uX[2][i] = S.uX[2][otherVertexId(r1)] - U[2] * cdist * cTheta + alpha + op.eps;
+        }
+        else
+        {
+            S.lX[2][i] = X[2][i] - op.eps;
+            S.uX[2][i] = X[2][i] + op.eps;
+        };
+    };
+
+    // expanding the box until some reference distances are not satisfied
+    expandBounds(i, v, S.lX, S.uX, op.be, op.eps);
+
+    // performing the DDF pruning device
+    perr = DDF(i, v, X);
+
+    // if it is necessary to refine the current solution
+    if (perr > op.eps)
+    {
+        // verification of distance between the boxes (if DDF gave a negative result)
+        if (BoxDDF(i, v, S.lX, S.uX) < op.eps)
+        {
+            k = 0;
+            do // if the distance between the boxes is feasible,
+            {  // then we can try to improve the current solution by local optimization
+                pperr = perr;
+                spg(i + 1, v, X, S, op, info, &it, &obj);
+                info->nspg++;
+                perr = DDF(i, v, X);
+                reCenterBounds(i + 1, v, X, S.lX, S.uX, op.be, op.eps);
+                if (perr < op.eps)
+                    info->nspgok++;
+                k++;
+            } while (perr > op.eps && pperr - perr > op.eps && k < 20);
+        };
+    };
+
+    if (perr > op.eps)
+    {
+        info->pruning++;
+        pruned = true;
+    }
+
+    // skipped verifying whether the new found solution is too close to the previous one
+
+    return pruned;
+}

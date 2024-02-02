@@ -23,6 +23,7 @@
 #include <memory>
 #include <typeinfo>
 #include <string>
+#include <cstdlib>
 #include <fstream>
 #include <sstream>
 #include <cmath>
@@ -40,6 +41,15 @@ extern "C"
 {
 #include "bp.h"
 }
+
+struct SearchSpace
+{
+  bool exact;
+  VERTEX *v;
+  SEARCH S;
+  OPTION op;
+  INFORMATION *info;
+};
 
 struct Config
 {
@@ -70,3 +80,8 @@ struct Config
 
 // mdjeep.cpp
 Config mdjeep_main(std::string inputFile);
+int prepare_bp(VERTEX *v, double **X, SEARCH S, OPTION op, INFORMATION *info);
+bool prepare_branch(int i, Omega *current, int &it, int nb, double cdist, double cTheta, double sTheta, REFERENCE *r1, REFERENCE *r3, double **X, VERTEX *v, SEARCH S, OPTION op, INFORMATION *info);
+
+// utils.cpp
+double **copyMatrix(double **matrix, int rows, int cols);
