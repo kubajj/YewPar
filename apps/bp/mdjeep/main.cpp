@@ -161,8 +161,8 @@ struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
       else
         current = lastOmegaInterval(omegaL);
 
-      X1 = copy(node.X);
-      X2 = copy(node.X);
+      X1 = copy(node.X, 3, n_vertices);
+      X2 = copy(node.X, 3, n_vertices);
 
       numChildren = 0;
       pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, r1, r3, X1, space.v, space.S, space.op, space.info);
@@ -254,6 +254,9 @@ int hpx_main(hpx::program_options::variables_map &opts)
       fprintf(stderr, " ");
   };
   auto start_time = std::chrono::steady_clock::now();
+
+  auto skeletonType = opts["skeleton"].as<std::string>();
+
   std::uint64_t count;
   if (skeletonType == "seq")
   {
