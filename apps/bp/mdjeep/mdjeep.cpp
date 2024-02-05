@@ -483,13 +483,13 @@ int prepare_bp(VERTEX *v, double **X, SEARCH S, OPTION op, INFORMATION *info)
     return i + 3;
 }
 
-bool prepare_branch(int i, Omega *current, int &it, int nb, double cdist, double cTheta, double sTheta, REFERENCE *r1, REFERENCE *r3, double **X, VERTEX *v, SEARCH S, OPTION op, INFORMATION *info)
+bool prepare_branch(int i, Omega *current, int &it, int nb, double cdist, double cTheta, double sTheta, double *U, REFERENCE *r1, REFERENCE *r3, double **X, VERTEX *v, SEARCH S, OPTION op, INFORMATION *info)
 {
     bool pruned = false;
 
     int j, k;
     int ldigits;
-    double A, B, U[9];
+    double A, B;
     double lomega0, uomega0;
     double lomega1, uomega1;
     double omega;

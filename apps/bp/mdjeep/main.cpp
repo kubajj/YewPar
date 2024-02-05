@@ -165,7 +165,7 @@ struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
       X2 = copy(node.X, 3, n_vertices);
 
       numChildren = 0;
-      pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, r1, r3, X1, space.v, space.S, space.op, space.info);
+      pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, U, r1, r3, X1, space.v, space.S, space.op, space.info);
       if (!pruned)
       {
         // Assign X1
@@ -179,7 +179,7 @@ struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
       if (omegaIntervalHasNextAlongDirection(current, space.op.symmetry < 2))
       {
         current = omegaIntervalNextAlongDirection(current, space.op.symmetry < 2);
-        pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, r1, r3, X2, space.v, space.S, space.op, space.info);
+        pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, U, r1, r3, X2, space.v, space.S, space.op, space.info);
 
         if (!pruned)
         {
