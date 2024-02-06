@@ -444,7 +444,7 @@ Config mdjeep_main(std::string inputFile)
             expandBounds(i, v, S.lX, S.uX, op.be, op.eps);
         };
     };
-    config = config.createConfig(n, v, X, S, op, &info);
+    config = config.createConfig(n, m, v, X, S, op, &info);
     return config;
 }
 

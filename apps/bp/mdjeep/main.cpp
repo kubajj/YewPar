@@ -22,6 +22,7 @@ struct SearchNode
   int i;
   int n_vertices;
   double **X;
+  SEARCH S;
 
   int getObj() const
   {
@@ -34,6 +35,7 @@ struct SearchNode
     ar & i;
     ar & n_vertices;
     ar & X;
+    ar & S;
   }
 };
 
@@ -59,6 +61,7 @@ struct CountSols : YewPar::Enumerator<SearchNode, std::uint64_t>
 struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
 {
   double **X1, **X2;
+  SEARCH S1, S2;
   bool firstIsPruned;
   bool first;
   int i, n_vertices;
@@ -93,9 +96,9 @@ struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
       it = 0;
 
       // reference vertices
-      r3 = space.S.refs[i].r3;
-      r2 = space.S.refs[i].r2;
-      r1 = space.S.refs[i].r1;
+      r3 = node.S.refs[i].r3;
+      r2 = node.S.refs[i].r2;
+      r1 = node.S.refs[i].r1;
       cdist = lowerBound(r1);
 
       // theta angle ("bond" angles)
@@ -132,7 +135,7 @@ struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
         };
       };
       // if the layer is symmetric, it is not necessary to consider the entire omega intervals
-      if (space.S.sym[i])
+      if (node.S.sym[i])
       {
         lomega0 = 0.5 * (lomega0 + uomega0);
         uomega0 = lomega0;
@@ -163,9 +166,11 @@ struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
 
       X1 = copy(node.X, 3, n_vertices);
       X2 = copy(node.X, 3, n_vertices);
+      S1 = copySearch(node.S, n_vertices, space.m);
+      S2 = copySearch(node.S, n_vertices, space.m);
 
       numChildren = 0;
-      pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, U, r1, r3, X1, space.v, space.S, space.op, space.info);
+      pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, U, r1, r3, X1, space.v, S1, space.op, space.info);
       if (!pruned)
       {
         // Assign X1
@@ -179,7 +184,7 @@ struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
       if (omegaIntervalHasNextAlongDirection(current, space.op.symmetry < 2))
       {
         current = omegaIntervalNextAlongDirection(current, space.op.symmetry < 2);
-        pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, U, r1, r3, X2, space.v, space.S, space.op, space.info);
+        pruned = prepare_branch(i, current, it, nb, cdist, cTheta, sTheta, U, r1, r3, X2, space.v, S2, space.op, space.info);
 
         if (!pruned)
         {
@@ -200,11 +205,13 @@ struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
     if (!firstIsPruned && first)
     {
       nextNode.X = X1;
+      nextNode.S = S1;
       first = false;
     }
     else
     {
       nextNode.X = X2;
+      nextNode.S = S2;
     }
     return nextNode;
   }
@@ -227,6 +234,7 @@ int hpx_main(hpx::program_options::variables_map &opts)
   if (config.error)
     return hpx::finalize();
   n = config.n;
+  m = config.m;
   v = config.v;
   X = config.X;
   S = config.S;
@@ -244,7 +252,8 @@ int hpx_main(hpx::program_options::variables_map &opts)
   root.i = i;
   root.n_vertices = n;
   root.X = X;
-  SearchSpace searchS = {false, v, S, op, &info};
+  root.S = S;
+  SearchSpace searchS = {false, m, v, op, &info};
 
   fprintf(stderr, "mdjeep: bp is exploring the search tree ... ");
   if (op.monitor)

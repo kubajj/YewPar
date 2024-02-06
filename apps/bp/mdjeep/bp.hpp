@@ -45,15 +45,15 @@ extern "C"
 struct SearchSpace
 {
   bool exact;
+  int m;
   VERTEX *v;
-  SEARCH S;
   OPTION op;
   INFORMATION *info;
 };
 
 struct Config
 {
-  int n;
+  int n, m;
   VERTEX *v;
   double **X;
   SEARCH S;
@@ -61,12 +61,13 @@ struct Config
   INFORMATION *info;
   bool error;
 
-  Config createConfig(int n, VERTEX *v, double **X, SEARCH S, OPTION op, INFORMATION *info)
+  Config createConfig(int n, int m, VERTEX *v, double **X, SEARCH S, OPTION op, INFORMATION *info)
   {
     Config config;
 
     // Initialize the Config instance with the provided values
     config.n = n;
+    config.m = m;
     config.v = v;
     config.X = X;
     config.S = S;
@@ -85,3 +86,4 @@ bool prepare_branch(int i, Omega *current, int &it, int nb, double cdist, double
 
 // utils.cpp
 double **copy(double **matrix, int rows, int cols);
+SEARCH copySearch(SEARCH S, int n, int m);
