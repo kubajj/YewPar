@@ -46,33 +46,54 @@ SEARCH copySearch(SEARCH S, int n, int m)
     S.memory = allocateVector(n);
     for (int i = 0; i < n; i++)
     {
-        newS.sym[i] = S.sym[i];
-        newS.refs[i] = S.refs[i];
-        newS.memory[i] = S.memory[i];
+        if (S.sym[i] != NULL)
+            newS.sym[i] = S.sym[i];
+        if (!isNullTriplet(S.refs[i]))
+            newS.refs[i] = S.refs[i];
+        if (S.memory[i] != NULL)
+            newS.memory[i] = S.memory[i];
         for (int j = 0; j < 3; j++)
         {
-            newS.pX[j][i] = S.pX[j][i];
-            newS.lX[j][i] = S.lX[j][i];
-            newS.uX[j][i] = S.uX[j][i];
-            newS.gX[j][i] = S.gX[j][i];
-            newS.sX[j][i] = S.sX[j][i];
-            newS.Xp[j][i] = S.Xp[j][i];
-            newS.gXp[j][i] = S.gXp[j][i];
-            newS.DX[j][i] = S.DX[j][i];
-            newS.YX[j][i] = S.YX[j][i];
-            newS.DX[j][i] = S.DX[j][i];
+            if (S.pX[j][i] != NULL)
+                newS.pX[j][i] = S.pX[j][i];
+            if (S.lX[j][i] != NULL)
+                newS.lX[j][i] = S.lX[j][i];
+            if (S.uX[j][i] != NULL)
+                newS.uX[j][i] = S.uX[j][i];
+            if (S.gX[j][i] != NULL)
+                newS.gX[j][i] = S.gX[j][i];
+            if (S.sX[j][i] != NULL)
+                newS.sX[j][i] = S.sX[j][i];
+            if (S.Xp[j][i] != NULL)
+                newS.Xp[j][i] = S.Xp[j][i];
+            if (S.gXp[j][i] != NULL)
+                newS.gXp[j][i] = S.gXp[j][i];
+            if (S.DX[j][i] != NULL)
+                newS.DX[j][i] = S.DX[j][i];
+            if (S.YX[j][i] != NULL)
+                newS.YX[j][i] = S.YX[j][i];
+            if (S.DX[j][i] != NULL)
+                newS.DX[j][i] = S.DX[j][i];
         }
     }
     for (int k = 0; k < m; k++)
     {
-        newS.y[k] = S.y[k];
-        newS.gy[k] = S.gy[k];
-        newS.sy[k] = S.sy[k];
-        newS.yp[k] = S.yp[k];
-        newS.gyp[k] = S.gyp[k];
-        newS.Dy[k] = S.Dy[k];
-        newS.Yy[k] = S.Yy[k];
-        newS.Zy[k] = S.Zy[k];
+        if (S.y[k] != NULL)
+            newS.y[k] = S.y[k];
+        if (S.gy[k] != NULL)
+            newS.gy[k] = S.gy[k];
+        if (S.sy[k] != NULL)
+            newS.sy[k] = S.sy[k];
+        if (S.yp[k] != NULL)
+            newS.yp[k] = S.yp[k];
+        if (S.gyp[k] != NULL)
+            newS.gyp[k] = S.gyp[k];
+        if (S.Dy[k] != NULL)
+            newS.Dy[k] = S.Dy[k];
+        if (S.Yy[k] != NULL)
+            newS.Yy[k] = S.Yy[k];
+        if (S.Zy[k] != NULL)
+            newS.Zy[k] = S.Zy[k];
     }
     newS.pi = S.pi;
     return newS;
