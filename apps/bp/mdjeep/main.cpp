@@ -219,7 +219,7 @@ struct GenNode : YewPar::NodeGenerator<SearchNode, SearchSpace>
 
 int hpx_main(hpx::program_options::variables_map &opts)
 {
-  int i, n;
+  int i, n, m;
   VERTEX *v;
   double **X;
   SEARCH S;
