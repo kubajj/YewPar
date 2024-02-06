@@ -75,4 +75,5 @@ SEARCH copySearch(SEARCH S, int n, int m)
         newS.Zy[k] = S.Zy[k];
     }
     newS.pi = S.pi;
+    return newS;
 }
